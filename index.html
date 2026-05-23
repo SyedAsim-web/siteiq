@@ -3,2021 +3,1970 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SiteIQ — Multi-Platform Dashboard</title>
+<title>Nexus — Multi-Platform Analytics</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-:root {
-  --ink: #0e0f11;
-  --ink-2: #1c1e22;
-  --ink-3: #2a2d33;
-  --mist: #f4f3ef;
-  --mist-2: #eceae4;
-  --mist-3: #dedad1;
-  --gold: #b8965a;
-  --gold-light: #d4b07a;
-  --gold-dim: rgba(184,150,90,0.15);
-  --sage: #3d6b5c;
-  --sage-light: #5a9e8a;
-  --slate: #4a5568;
-  --text-primary: #0e0f11;
-  --text-secondary: #5a5e68;
-  --text-muted: #9098a8;
-  --border: rgba(0,0,0,0.08);
-  --border-strong: rgba(0,0,0,0.14);
-  --card-bg: #ffffff;
-  --page-bg: #f4f3ef;
-  --sidebar-bg: #0e0f11;
-  --sidebar-text: #c8ccd6;
-  --sidebar-muted: #6b7280;
-  --sidebar-active: #b8965a;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.05);
-  --shadow-lg: 0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--page-bg);
-  color: var(--text-primary);
-  display: flex;
-  min-height: 100vh;
-  font-size: 14px;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 240px;
-  min-width: 240px;
-  background: var(--sidebar-bg);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-
-.sidebar-logo {
-  padding: 24px 20px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-
-.logo-mark {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo-icon {
-  width: 32px; height: 32px;
-  background: var(--gold);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.logo-icon svg { width: 18px; height: 18px; fill: #fff; }
-
-.logo-text {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 22px;
-  font-weight: 600;
-  color: #ffffff;
-  letter-spacing: 0.02em;
-}
-
-.logo-text span { color: var(--gold); }
-
-.sidebar-nav {
-  flex: 1;
-  padding: 16px 12px;
-  overflow-y: auto;
-}
-
-.nav-section {
-  margin-bottom: 24px;
-}
-
-.nav-label {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--sidebar-muted);
-  padding: 0 8px;
-  margin-bottom: 6px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  color: var(--sidebar-text);
-  font-size: 13px;
-  font-weight: 400;
-  cursor: pointer;
-  transition: all 0.15s;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-}
-
-.nav-item:hover {
-  background: rgba(255,255,255,0.06);
-  color: #fff;
-}
-
-.nav-item.active {
-  background: var(--gold-dim);
-  color: var(--gold);
-  border: 1px solid rgba(184,150,90,0.2);
-}
-
-.nav-item .nav-icon {
-  width: 16px; height: 16px;
-  opacity: 0.7;
-  flex-shrink: 0;
-}
-
-.nav-item.active .nav-icon { opacity: 1; }
-
-.nav-badge {
-  margin-left: auto;
-  background: rgba(255,255,255,0.1);
-  color: var(--sidebar-text);
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: 10px;
-}
-
-.nav-item.active .nav-badge { background: rgba(184,150,90,0.2); color: var(--gold); }
-
-.sidebar-footer {
-  padding: 16px 12px;
-  border-top: 1px solid rgba(255,255,255,0.06);
-}
-
-.add-site-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 9px 12px;
-  background: var(--gold);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s;
-  font-family: 'DM Sans', sans-serif;
-}
-
-.add-site-btn:hover { background: var(--gold-light); }
-
-/* Main */
-.main {
-  margin-left: 240px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-/* Topbar */
-.topbar {
-  background: var(--card-bg);
-  border-bottom: 1px solid var(--border);
-  padding: 0 28px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-.site-selector-wrap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  max-width: 420px;
-}
-
-.site-selector-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  white-space: nowrap;
-  font-weight: 400;
-}
-
-.site-select {
-  flex: 1;
-  padding: 7px 32px 7px 12px;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  background: var(--page-bg);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary);
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%239098a8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-}
-
-.site-select:focus { outline: none; border-color: var(--gold); }
-
-.site-status-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: #34d399;
-  flex-shrink: 0;
-}
-
-.topbar-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.date-range {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  color: var(--text-secondary);
-  background: var(--page-bg);
-  cursor: pointer;
-}
-
-.date-range select {
-  border: none;
-  background: none;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  outline: none;
-}
-
-.export-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  background: var(--ink);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  transition: background 0.15s;
-}
-
-.export-btn:hover { background: var(--ink-3); }
-
-/* Platform tabs */
-.platform-tabs {
-  background: var(--card-bg);
-  border-bottom: 1px solid var(--border);
-  padding: 0 28px;
-  display: flex;
-  gap: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.platform-tabs::-webkit-scrollbar { display: none; }
-
-.platform-tab {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 14px 18px;
-  border: none;
-  background: none;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--text-muted);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.15s;
-  white-space: nowrap;
-}
-
-.platform-tab:hover { color: var(--text-primary); }
-
-.platform-tab.active {
-  color: var(--text-primary);
-  border-bottom-color: var(--gold);
-  font-weight: 500;
-}
-
-.tab-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-}
-
-/* Content */
-.content {
-  padding: 28px;
-  flex: 1;
-}
-
-/* Summary strip */
-.summary-strip {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px;
-  margin-bottom: 24px;
-}
-
-.metric-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 18px 20px;
-  box-shadow: var(--shadow-sm);
-  position: relative;
-  overflow: hidden;
-}
-
-.metric-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-}
-
-.metric-card.gold::before { background: var(--gold); }
-.metric-card.sage::before { background: var(--sage-light); }
-.metric-card.blue::before { background: #4f8ef7; }
-.metric-card.rose::before { background: #e56b6b; }
-.metric-card.purple::before { background: #8b6fd4; }
-.metric-card.teal::before { background: #2cb4a0; }
-
-.metric-label {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-
-.metric-value {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 30px;
-  font-weight: 500;
-  color: var(--text-primary);
-  line-height: 1;
-  margin-bottom: 6px;
-}
-
-.metric-change {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 11px;
-  padding: 2px 7px;
-  border-radius: 10px;
-}
-
-.metric-change.up { background: #dcfce7; color: #16a34a; }
-.metric-change.down { background: #fee2e2; color: #dc2626; }
-.metric-change.neutral { background: #f1f5f9; color: #64748b; }
-
-/* Platform panels */
-.platform-panel { display: none; }
-.platform-panel.active { display: block; }
-
-/* Chart grid */
-.chart-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.chart-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 20px;
-  box-shadow: var(--shadow-sm);
-}
-
-.chart-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 18px;
-}
-
-.chart-card-title {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.chart-card-sub {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-.chart-tag {
-  font-size: 10px;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-weight: 500;
-  background: var(--gold-dim);
-  color: var(--gold);
-}
-
-/* Data tables */
-.data-table-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 20px;
-}
-
-.data-table-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.data-table-title {
-  font-size: 13px;
-  font-weight: 500;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-th {
-  padding: 10px 20px;
-  text-align: left;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  background: var(--mist);
-  border-bottom: 1px solid var(--border);
-}
-
-td {
-  padding: 11px 20px;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-secondary);
-}
-
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--mist); }
-
-.td-primary { color: var(--text-primary); font-weight: 500; }
-.td-url { color: var(--text-muted); font-size: 11px; }
-
-.badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 500;
-}
-
-.badge-green { background: #dcfce7; color: #16a34a; }
-.badge-blue { background: #dbeafe; color: #1d4ed8; }
-.badge-amber { background: #fef3c7; color: #d97706; }
-.badge-red { background: #fee2e2; color: #dc2626; }
-
-/* Integrations grid */
-.integrations-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.integration-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 18px 20px;
-  box-shadow: var(--shadow-sm);
-}
-
-.integration-card-top {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.platform-icon {
-  width: 36px; height: 36px;
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  font-size: 16px;
-}
-
-.platform-icon.gsc { background: #e8f0fe; }
-.platform-icon.ga4 { background: #fce8d0; }
-.platform-icon.ghl { background: #e8fef0; }
-.platform-icon.wp { background: #e8f0fe; }
-
-.integration-name { font-size: 13px; font-weight: 500; }
-.integration-status { font-size: 11px; color: var(--text-muted); }
-
-.connection-status {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  margin-bottom: 12px;
-}
-
-.dot-live { width: 6px; height: 6px; border-radius: 50%; background: #34d399; }
-.dot-off { width: 6px; height: 6px; border-radius: 50%; background: #e5e7eb; }
-
-.connect-btn {
-  width: 100%;
-  padding: 7px 12px;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  background: none;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.connect-btn:hover { background: var(--mist); }
-.connect-btn.connected { background: var(--gold); border-color: var(--gold); color: #fff; }
-.connect-btn.connected:hover { background: var(--gold-light); border-color: var(--gold-light); }
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
-}
-
-.modal-overlay.open {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.modal {
-  background: var(--card-bg);
-  border-radius: var(--radius-lg);
-  width: 520px;
-  max-width: calc(100vw - 32px);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  transform: translateY(12px);
-  transition: transform 0.2s;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-overlay.open .modal {
-  transform: translateY(0);
-}
-
-.modal-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modal-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 20px;
-  font-weight: 500;
-}
-
-.modal-close {
-  width: 28px; height: 28px;
-  border: none;
-  background: var(--mist);
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--text-secondary);
-}
-
-.modal-body { padding: 24px; }
-
-.form-group { margin-bottom: 18px; }
-.form-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; display: block; }
-.form-input {
-  width: 100%;
-  padding: 9px 12px;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  color: var(--text-primary);
-  background: var(--page-bg);
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.form-input:focus { border-color: var(--gold); }
-
-.platform-connect-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
-
-.platform-connect-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--mist);
-}
-
-.platform-connect-row .platform-icon { width: 28px; height: 28px; font-size: 13px; border-radius: 6px; }
-.platform-connect-info { flex: 1; }
-.platform-connect-name { font-size: 12px; font-weight: 500; }
-.platform-connect-input {
-  padding: 5px 10px;
-  border: 1px solid var(--border-strong);
-  border-radius: 5px;
-  font-size: 11px;
-  background: #fff;
-  outline: none;
-  width: 140px;
-  font-family: 'DM Sans', sans-serif;
-}
-
-.modal-footer {
-  padding: 16px 24px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.btn-secondary {
-  padding: 8px 16px;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  background: none;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.btn-primary {
-  padding: 8px 20px;
-  background: var(--gold);
-  border: none;
-  border-radius: var(--radius-sm);
-  color: #fff;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.btn-primary:hover { background: var(--gold-light); }
-
-/* Progress bar */
-.progress-bar { height: 4px; background: var(--mist-2); border-radius: 2px; overflow: hidden; }
-.progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
-
-/* Hamburger */
-.hamburger {
-  display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.hamburger span {
-  width: 20px; height: 1.5px;
-  background: var(--text-primary);
-  border-radius: 1px;
-  display: block;
-}
-
-/* PDF loading */
-.pdf-toast {
-  position: fixed;
-  bottom: 24px; right: 24px;
-  background: var(--ink);
-  color: #fff;
-  padding: 12px 18px;
-  border-radius: var(--radius-md);
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  z-index: 2000;
-  transform: translateY(80px);
-  opacity: 0;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-lg);
-}
-
-.pdf-toast.show {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.pdf-spinner {
-  width: 14px; height: 14px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Mobile sidebar */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 99;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .sidebar-overlay.open {
-    display: block;
-  }
-  .main {
-    margin-left: 0;
-  }
-  .hamburger {
-    display: flex;
-  }
-  .topbar {
-    padding: 0 16px;
-  }
-  .content {
-    padding: 16px;
-  }
-  .platform-tabs {
-    padding: 0 16px;
-  }
-  .chart-grid {
-    grid-template-columns: 1fr;
-  }
-  .summary-strip {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .metric-value {
-    font-size: 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .summary-strip {
-    grid-template-columns: 1fr;
-  }
-  .integrations-grid {
-    grid-template-columns: 1fr;
-  }
-  .topbar-right .date-range { display: none; }
-}
-
-/* Print / PDF styles */
-@media print {
-  .sidebar, .topbar, .platform-tabs, .modal-overlay, .pdf-toast { display: none !important; }
-  .main { margin-left: 0; }
-  .platform-panel { display: block !important; }
-  body { background: #fff; }
-  .chart-card, .metric-card, .data-table-card { box-shadow: none; break-inside: avoid; }
+/* ─── Reset & Tokens ─────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0b0e;
+  --bg2:#111318;
+  --bg3:#181b22;
+  --bg4:#1f222b;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.12);
+  --text:#e8eaf0;
+  --text2:#9ba3b8;
+  --text3:#5c6478;
+  --accent:#6c8fff;
+  --accent2:#4f6ee0;
+  --gold:#e8b86d;
+  --gold2:#c99a4e;
+  --green:#3ecf8e;
+  --red:#ff6b6b;
+  --purple:#a78bfa;
+  --teal:#2dd4bf;
+  --orange:#fb923c;
+  --r4:4px;--r6:6px;--r8:8px;--r12:12px;--r16:16px;--r20:20px;
+  --sidebar:220px;
+  --topbar:56px;
+  --shadow:0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg:0 8px 48px rgba(0,0,0,0.6);
+}
+html{font-size:14px;scroll-behavior:smooth}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,select,textarea{font-family:inherit}
+a{color:inherit;text-decoration:none}
+
+/* ─── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+/* ─── Sidebar ────────────────────────────────────────────── */
+.sidebar{
+  width:var(--sidebar);min-width:var(--sidebar);
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:200;
+  transition:transform .25s ease;
+}
+.sidebar-logo{
+  padding:18px 16px 14px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.logo-mark{
+  width:32px;height:32px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+}
+.logo-mark svg{width:18px;height:18px}
+.logo-name{
+  font-family:'Syne',sans-serif;
+  font-size:18px;font-weight:700;
+  letter-spacing:0.04em;
+  color:#fff;
+}
+.logo-name span{color:var(--accent)}
+.logo-tagline{font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase}
+
+.sidebar-nav{flex:1;padding:12px 10px;overflow-y:auto}
+.nav-group{margin-bottom:20px}
+.nav-group-label{
+  font-size:9px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--text3);padding:0 8px;margin-bottom:4px;
+}
+.nav-btn{
+  display:flex;align-items:center;gap:9px;
+  width:100%;padding:8px 10px;border-radius:var(--r6);
+  color:var(--text2);font-size:12.5px;font-weight:400;
+  transition:all .15s;position:relative;
+}
+.nav-btn:hover{background:var(--bg3);color:var(--text)}
+.nav-btn.active{background:rgba(108,143,255,0.12);color:var(--accent);font-weight:500}
+.nav-btn.active::before{
+  content:'';position:absolute;left:0;top:20%;bottom:20%;
+  width:2px;background:var(--accent);border-radius:2px;
+}
+.nav-icon{width:15px;height:15px;opacity:.7;flex-shrink:0}
+.nav-btn.active .nav-icon{opacity:1}
+.nav-pill{
+  margin-left:auto;background:var(--bg4);
+  color:var(--text3);font-size:10px;padding:1px 7px;border-radius:10px;
+}
+.nav-btn.active .nav-pill{background:rgba(108,143,255,0.2);color:var(--accent)}
+
+.sidebar-footer{
+  padding:12px 10px;border-top:1px solid var(--border);
+}
+.add-website-btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  width:100%;padding:9px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border-radius:var(--r8);
+  font-size:12px;font-weight:600;letter-spacing:0.02em;
+  transition:opacity .15s;
+}
+.add-website-btn:hover{opacity:.88}
+
+/* ─── Main ───────────────────────────────────────────────── */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;min-width:0}
+
+/* ─── Topbar ─────────────────────────────────────────────── */
+.topbar{
+  height:var(--topbar);background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+  display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:100;
+}
+.topbar-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.hamburger{display:none;padding:4px;flex-direction:column;gap:4px}
+.hamburger span{width:18px;height:1.5px;background:var(--text);display:block;border-radius:1px}
+
+.site-search-wrap{position:relative;flex:1;max-width:360px}
+.site-search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text3);pointer-events:none}
+.topbar-search{
+  width:100%;padding:7px 12px 7px 32px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r8);color:var(--text);font-size:13px;outline:none;
+  transition:border-color .15s;
+}
+.topbar-search:focus{border-color:var(--accent)}
+.topbar-search::placeholder{color:var(--text3)}
+
+.topbar-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+
+.date-select{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 10px;background:var(--bg3);
+  border:1px solid var(--border);border-radius:var(--r6);
+  font-size:12px;color:var(--text2);
+}
+.date-select select{
+  background:none;border:none;color:var(--text2);
+  font-size:12px;outline:none;cursor:pointer;
+}
+.date-select select option{background:var(--bg3)}
+
+.topbar-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 12px;border-radius:var(--r6);
+  font-size:12px;font-weight:500;transition:all .15s;
+}
+.btn-outline{background:var(--bg3);border:1px solid var(--border);color:var(--text2)}
+.btn-outline:hover{border-color:var(--border2);color:var(--text)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-gold{background:var(--gold);color:#0a0b0e}
+.btn-gold:hover{background:var(--gold2)}
+
+/* ─── Content ────────────────────────────────────────────── */
+.content{padding:24px;flex:1;min-width:0}
+.page{display:none}
+.page.active{display:block}
+
+/* ─── Section header ─────────────────────────────────────── */
+.section-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:20px;gap:12px;flex-wrap:wrap;
+}
+.section-title{
+  font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:#fff;
+}
+.section-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.section-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* ─── Stat grid ──────────────────────────────────────────── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r12);padding:16px;position:relative;overflow:hidden;
+}
+.stat-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+}
+.stat-card.c-blue::after{background:var(--accent)}
+.stat-card.c-gold::after{background:var(--gold)}
+.stat-card.c-green::after{background:var(--green)}
+.stat-card.c-red::after{background:var(--red)}
+.stat-card.c-purple::after{background:var(--purple)}
+.stat-card.c-teal::after{background:var(--teal)}
+.stat-card.c-orange::after{background:var(--orange)}
+
+.stat-label{font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.stat-value{font-family:'Syne',sans-serif;font-size:26px;font-weight:600;color:#fff;line-height:1;margin-bottom:6px}
+.stat-change{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 7px;border-radius:10px}
+.stat-change.up{background:rgba(62,207,142,0.12);color:var(--green)}
+.stat-change.down{background:rgba(255,107,107,0.12);color:var(--red)}
+.stat-change.flat{background:var(--bg4);color:var(--text3)}
+
+/* ─── Chart cards ────────────────────────────────────────── */
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:16px}
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r12);padding:18px}
+.chart-card.full{grid-column:1/-1}
+.chart-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.chart-title{font-size:13px;font-weight:500;color:var(--text)}
+.chart-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.chart-tag{font-size:10px;padding:3px 8px;border-radius:10px;background:rgba(108,143,255,0.12);color:var(--accent);font-weight:500}
+.chart-wrap{position:relative}
+
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* ─── Tables ─────────────────────────────────────────────── */
+.table-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r12);overflow:hidden;margin-bottom:16px}
+.table-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.table-title{font-size:13px;font-weight:500}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{padding:9px 18px;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);background:var(--bg3);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 18px;border-bottom:1px solid var(--border);color:var(--text2)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg3)}
+.td-main{color:var(--text);font-weight:500}
+.td-muted{color:var(--text3);font-size:11px}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.badge-green{background:rgba(62,207,142,0.12);color:var(--green)}
+.badge-blue{background:rgba(108,143,255,0.12);color:var(--accent)}
+.badge-amber{background:rgba(232,184,109,0.12);color:var(--gold)}
+.badge-red{background:rgba(255,107,107,0.12);color:var(--red)}
+.badge-purple{background:rgba(167,139,250,0.12);color:var(--purple)}
+.badge-gray{background:var(--bg4);color:var(--text3)}
+
+/* ─── Platform tabs ──────────────────────────────────────── */
+.ptab-bar{display:flex;gap:2px;margin-bottom:20px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r8);padding:3px;overflow-x:auto;scrollbar-width:none}
+.ptab-bar::-webkit-scrollbar{display:none}
+.ptab{
+  padding:7px 14px;border-radius:var(--r6);
+  font-size:12px;font-weight:400;color:var(--text3);
+  transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:6px;
+}
+.ptab:hover{color:var(--text)}
+.ptab.active{background:var(--bg4);color:var(--text);font-weight:500}
+.ptab-dot{width:6px;height:6px;border-radius:50%}
+
+/* ─── Sites list page ────────────────────────────────────── */
+.sites-toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filter-input{
+  flex:1;min-width:200px;max-width:320px;
+  padding:8px 12px 8px 34px;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r8);color:var(--text);font-size:13px;outline:none;
+  transition:border-color .15s;position:relative;
+}
+.filter-wrap{position:relative;flex:1;min-width:200px;max-width:320px}
+.filter-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text3);pointer-events:none}
+.filter-input:focus{border-color:var(--accent)}
+.filter-select{
+  padding:8px 12px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r8);color:var(--text2);font-size:12px;outline:none;cursor:pointer;
+}
+.filter-select option{background:var(--bg2)}
+
+.sites-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:14px;
+}
+.site-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r12);padding:16px;cursor:pointer;
+  transition:all .2s;
+}
+.site-card:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 4px 20px rgba(108,143,255,0.1)}
+.site-card-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.site-favicon{
+  width:36px;height:36px;border-radius:8px;
+  background:linear-gradient(135deg,var(--bg4),var(--bg3));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--accent);
+  flex-shrink:0;
+}
+.site-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.2}
+.site-domain{font-size:11px;color:var(--text3)}
+.site-status{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:11px}
+.dot-on{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.dot-off{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0}
+
+.site-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.site-stat{background:var(--bg3);border-radius:var(--r6);padding:8px 10px}
+.site-stat-label{font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:3px}
+.site-stat-val{font-family:'Syne',sans-serif;font-size:15px;font-weight:600;color:#fff}
+
+.site-card-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:12px;padding-top:12px;border-top:1px solid var(--border);
+}
+.site-platforms{display:flex;gap:4px}
+.plat-badge{
+  width:20px;height:20px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:700;
+}
+.plat-gsc{background:rgba(79,110,224,0.2);color:#6c8fff}
+.plat-ga4{background:rgba(251,146,60,0.2);color:#fb923c}
+.plat-ghl{background:rgba(62,207,142,0.2);color:#3ecf8e}
+.plat-wp{background:rgba(167,139,250,0.2);color:#a78bfa}
+
+.site-view-btn{
+  font-size:11px;color:var(--accent);font-weight:500;
+  display:flex;align-items:center;gap:4px;
+}
+
+/* ─── Virtual list pagination ────────────────────────────── */
+.pagination{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:20px 0 8px;
+}
+.page-btn{
+  width:32px;height:32px;border-radius:var(--r6);
+  background:var(--bg2);border:1px solid var(--border);
+  color:var(--text2);font-size:12px;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.page-btn:hover{border-color:var(--border2);color:var(--text)}
+.page-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.page-info{font-size:12px;color:var(--text3);padding:0 8px}
+
+/* ─── Site detail view ───────────────────────────────────── */
+.back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--text2);margin-bottom:16px;
+  padding:6px 10px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r6);transition:all .15s;
+}
+.back-btn:hover{color:var(--text);border-color:var(--border2)}
+
+/* ─── Integrations ───────────────────────────────────────── */
+.integ-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.integ-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r12);padding:16px}
+.integ-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.integ-icon{width:34px;height:34px;border-radius:var(--r8);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.integ-name{font-size:13px;font-weight:500}
+.integ-desc{font-size:11px;color:var(--text3)}
+.integ-status{display:flex;align-items:center;gap:5px;font-size:11px;margin-bottom:10px}
+.prog-bar{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-bottom:12px}
+.prog-fill{height:100%;border-radius:2px}
+.integ-btn{
+  width:100%;padding:7px;border-radius:var(--r6);
+  font-size:12px;font-weight:500;transition:all .15s;
+  border:1px solid var(--border);color:var(--text2);background:none;
+}
+.integ-btn:hover{background:var(--bg3)}
+.integ-btn.connected{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff}
+.integ-btn.connected:hover{opacity:.88}
+
+/* ─── Presentation Builder ───────────────────────────────── */
+.pres-builder{display:grid;grid-template-columns:240px 1fr;gap:16px;min-height:600px}
+.pres-slides{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r12);
+  padding:12px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;
+}
+.pres-slide-thumb{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);
+  padding:10px;cursor:pointer;transition:all .15s;
+  aspect-ratio:16/9;display:flex;flex-direction:column;justify-content:space-between;
+}
+.pres-slide-thumb:hover,.pres-slide-thumb.active{border-color:var(--accent)}
+.pres-slide-thumb.active{background:rgba(108,143,255,0.08)}
+.thumb-title{font-size:10px;font-weight:600;color:var(--text)}
+.thumb-sub{font-size:8px;color:var(--text3)}
+.thumb-bars{display:flex;align-items:flex-end;gap:2px;height:24px;margin-top:4px}
+.thumb-bar{background:var(--accent);border-radius:1px;flex:1;opacity:.6}
+
+.pres-canvas{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r12);padding:24px;
+  display:flex;flex-direction:column;
+}
+.pres-frame{
+  background:#fff;border-radius:var(--r12);flex:1;min-height:400px;
+  overflow:hidden;position:relative;
+}
+.pres-controls{display:flex;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px}
+
+.slide-content{
+  width:100%;height:100%;padding:40px;
+  font-family:'Instrument Sans',sans-serif;
+  background:linear-gradient(135deg,#0a0b0e 0%,#111827 100%);
+  color:#fff;display:flex;flex-direction:column;
+}
+.slide-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:700;margin-bottom:6px;color:#fff}
+.slide-domain{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:24px}
+.slide-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.slide-metric{background:rgba(255,255,255,0.06);border-radius:8px;padding:14px}
+.slide-metric-label{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:4px}
+.slide-metric-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:700}
+
+/* ─── Modal ──────────────────────────────────────────────── */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  z-index:500;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(4px);
+}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);
+  width:540px;max-width:calc(100vw - 32px);max-height:90vh;overflow-y:auto;
+  box-shadow:var(--shadow-lg);transform:translateY(16px);transition:transform .2s;
+}
+.overlay.open .modal{transform:translateY(0)}
+.modal-hd{
+  padding:18px 22px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:600}
+.modal-x{
+  width:26px;height:26px;background:var(--bg3);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text2);font-size:13px;transition:background .15s;
+}
+.modal-x:hover{background:var(--bg4)}
+.modal-body{padding:22px}
+.modal-ft{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+.form-row{margin-bottom:16px}
+.form-label{font-size:11px;font-weight:500;color:var(--text2);margin-bottom:6px;display:block;letter-spacing:0.04em}
+.form-input{
+  width:100%;padding:9px 12px;background:var(--bg3);
+  border:1px solid var(--border);border-radius:var(--r8);
+  color:var(--text);font-size:13px;outline:none;transition:border-color .15s;
+}
+.form-input:focus{border-color:var(--accent)}
+.form-input::placeholder{color:var(--text3)}
+
+.platform-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r8);margin-bottom:8px;
+}
+.plat-icon-sm{
+  width:26px;height:26px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:700;
+}
+.plat-label{font-size:12px;font-weight:500;flex:1}
+.plat-input{
+  padding:5px 10px;background:var(--bg);border:1px solid var(--border);
+  border-radius:5px;font-size:11px;color:var(--text);outline:none;width:130px;
+}
+.plat-input:focus{border-color:var(--accent)}
+.plat-input::placeholder{color:var(--text3)}
+
+/* ─── Toast ──────────────────────────────────────────────── */
+.toast{
+  position:fixed;bottom:20px;right:20px;
+  background:var(--bg3);border:1px solid var(--border2);
+  padding:11px 16px;border-radius:var(--r10);
+  font-size:13px;display:flex;align-items:center;gap:9px;
+  z-index:9999;transform:translateY(60px);opacity:0;
+  transition:all .3s ease;box-shadow:var(--shadow);
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-spin{
+  width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);
+  border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ─── Sidebar overlay ────────────────────────────────────── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:199}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media(max-width:900px){
+  .pres-builder{grid-template-columns:1fr}
+  .pres-slides{display:none}
+}
+@media(max-width:768px){
+  :root{--sidebar:220px}
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay.open{display:block}
+  .main{margin-left:0}
+  .hamburger{display:flex}
+  .content{padding:16px}
+  .chart-grid{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+  .stat-grid{grid-template-columns:1fr}
+  .sites-grid{grid-template-columns:1fr}
+  .topbar-right .date-select{display:none}
+  .slide-metrics{grid-template-columns:1fr 1fr}
+}
+@media print{
+  .sidebar,.topbar,.overlay,.toast{display:none!important}
+  .main{margin-left:0}
+  body{background:#fff;color:#000}
 }
 </style>
 </head>
 <body>
 
-<!-- Sidebar overlay for mobile -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-<!-- Sidebar -->
+<!-- ── Sidebar ─────────────────────────────────────────────── -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="logo-mark">
-      <div class="logo-icon">
-        <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-          <rect x="1" y="1" width="7" height="7" rx="1.5"/>
-          <rect x="10" y="1" width="7" height="7" rx="1.5"/>
-          <rect x="1" y="10" width="7" height="7" rx="1.5"/>
-          <rect x="10" y="10" width="7" height="7" rx="1.5" opacity="0.5"/>
-        </svg>
-      </div>
-      <span class="logo-text">Site<span>IQ</span></span>
+      <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 2L16 6V12L9 16L2 12V6L9 2Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>
+        <circle cx="9" cy="9" r="2.5" fill="#fff"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-name">NEX<span>US</span></div>
+      <div class="logo-tagline">Analytics Platform</div>
     </div>
   </div>
 
   <nav class="sidebar-nav">
-    <div class="nav-section">
-      <div class="nav-label">Overview</div>
-      <button class="nav-item active" onclick="setView('overview')">
-        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        Dashboard
+    <div class="nav-group">
+      <div class="nav-group-label">Main</div>
+      <button class="nav-btn active" onclick="showPage('dashboard')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Overview
       </button>
-      <button class="nav-item" onclick="setView('sites')">
-        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/></svg>
-        All Sites
-        <span class="nav-badge" id="site-count-badge">4</span>
+      <button class="nav-btn" onclick="showPage('sites')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-4 4-4 14 0 18M12 3c4 4 4 14 0 18"/></svg>
+        All Websites
+        <span class="nav-pill" id="siteCountBadge">4</span>
       </button>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Platforms</div>
-      <button class="nav-item" onclick="switchTab('gsc')">
-        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5l4 4"/></svg>
+    <div class="nav-group">
+      <div class="nav-group-label">Platforms</div>
+      <button class="nav-btn" onclick="showPage('gsc')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5l4 4"/></svg>
         Search Console
       </button>
-      <button class="nav-item" onclick="switchTab('ga4')">
-        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13M9 21v-6h6v6"/></svg>
-        Google Analytics
+      <button class="nav-btn" onclick="showPage('ga4')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13M9 21v-6h6v6"/></svg>
+        GA4 Analytics
       </button>
-      <button class="nav-item" onclick="switchTab('ghl')">
-        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 18l9-9 3 3 6-6"/><path d="M17 6h4v4"/></svg>
+      <button class="nav-btn" onclick="showPage('ghl')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.23 11.5 19.79 19.79 0 011.17 2.88 2 2 0 013.16 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L7.09 8.91"/></svg>
         GHL Voice AI
       </button>
-      <button class="nav-item" onclick="switchTab('wp')">
-        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h4M9 15h5"/></svg>
+      <button class="nav-btn" onclick="showPage('gravity')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h4M9 15h5"/></svg>
         Gravity Forms
       </button>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Settings</div>
-      <button class="nav-item" onclick="openAddSite()">
-        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-        Add Website
+    <div class="nav-group">
+      <div class="nav-group-label">Tools</div>
+      <button class="nav-btn" onclick="showPage('presentation')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Presentation
       </button>
-      <button class="nav-item" onclick="switchTab('integrations')">
-        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M10 3H6a2 2 0 00-2 2v14a2 2 0 002 2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      <button class="nav-btn" onclick="showPage('integrations')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M10 3H6a2 2 0 00-2 2v14a2 2 0 002 2h4M16 17l5-5-5-5M21 12H9"/></svg>
         Integrations
       </button>
     </div>
   </nav>
 
   <div class="sidebar-footer">
-    <button class="add-site-btn" onclick="openAddSite()">
-      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    <button class="add-website-btn" onclick="openAddSite()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
       Add New Website
     </button>
   </div>
 </aside>
 
-<!-- Main content -->
+<!-- ── Main ─────────────────────────────────────────────────── -->
 <div class="main">
 
   <!-- Topbar -->
   <div class="topbar">
-    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
-      <span></span><span></span><span></span>
-    </button>
-
-    <div class="site-selector-wrap">
-      <span class="site-selector-label">Viewing:</span>
-      <div class="site-status-dot" id="statusDot"></div>
-      <select class="site-select" id="siteSelect" onchange="onSiteChange()">
-        <option value="all">— All Sites (Summary) —</option>
-        <option value="techflow">techflowdigital.com</option>
-        <option value="greenleaf">greenleafclinic.com</option>
-        <option value="urbanfit">urbanfitness.co</option>
-        <option value="brightlegal">brightlegalgroup.com</option>
-      </select>
+    <div class="topbar-left">
+      <button class="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+      <div class="site-search-wrap">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5l4 4"/></svg>
+        <input class="topbar-search" id="topbarSearch" placeholder="Search websites…" oninput="onTopbarSearch(this.value)">
+      </div>
     </div>
-
     <div class="topbar-right">
-      <div class="date-range">
+      <div class="date-select">
         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        <select id="dateRange" onchange="refreshCharts()">
+        <select id="dateRange" onchange="refreshAll()">
           <option value="7">Last 7 days</option>
           <option value="28" selected>Last 28 days</option>
           <option value="90">Last 90 days</option>
           <option value="180">Last 6 months</option>
         </select>
       </div>
-      <button class="export-btn" onclick="exportPDF()">
+      <button class="topbar-btn btn-outline" onclick="exportPDF()">
         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Export PDF
+        PDF
+      </button>
+      <button class="topbar-btn btn-primary" onclick="showPage('presentation')">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Present
       </button>
     </div>
   </div>
 
-  <!-- Platform tabs -->
-  <div class="platform-tabs" id="platformTabs">
-    <button class="platform-tab active" data-tab="overview" onclick="switchTab('overview')">
-      <span class="tab-dot" style="background:#b8965a"></span> Overview
-    </button>
-    <button class="platform-tab" data-tab="gsc" onclick="switchTab('gsc')">
-      <span class="tab-dot" style="background:#4f8ef7"></span> Search Console
-    </button>
-    <button class="platform-tab" data-tab="ga4" onclick="switchTab('ga4')">
-      <span class="tab-dot" style="background:#f4952a"></span> GA4 Analytics
-    </button>
-    <button class="platform-tab" data-tab="ghl" onclick="switchTab('ghl')">
-      <span class="tab-dot" style="background:#34d399"></span> GHL Voice AI
-    </button>
-    <button class="platform-tab" data-tab="wp" onclick="switchTab('wp')">
-      <span class="tab-dot" style="background:#8b6fd4"></span> Gravity Forms
-    </button>
-    <button class="platform-tab" data-tab="integrations" onclick="switchTab('integrations')">
-      <span class="tab-dot" style="background:#9098a8"></span> Integrations
-    </button>
-  </div>
-
-  <!-- Content area -->
+  <!-- Content -->
   <div class="content" id="mainContent">
 
-    <!-- OVERVIEW PANEL -->
-    <div class="platform-panel active" id="panel-overview">
-
-      <div class="summary-strip" id="overviewMetrics">
-        <div class="metric-card gold">
-          <div class="metric-label">Total Impressions</div>
-          <div class="metric-value" id="m-impressions">2.4M</div>
-          <span class="metric-change up">↑ 12.3%</span>
+    <!-- ── DASHBOARD ───────────────────────────────────────── -->
+    <div class="page active" id="page-dashboard">
+      <div class="section-head">
+        <div>
+          <div class="section-title">Overview Dashboard</div>
+          <div class="section-sub" id="dash-sub">All 4 websites · Last 28 days</div>
         </div>
-        <div class="metric-card sage">
-          <div class="metric-label">Organic Sessions</div>
-          <div class="metric-value" id="m-sessions">86.2K</div>
-          <span class="metric-change up">↑ 8.7%</span>
-        </div>
-        <div class="metric-card blue">
-          <div class="metric-label">Form Submissions</div>
-          <div class="metric-value" id="m-forms">1,847</div>
-          <span class="metric-change up">↑ 3.2%</span>
-        </div>
-        <div class="metric-card rose">
-          <div class="metric-label">Voice AI Calls</div>
-          <div class="metric-value" id="m-calls">342</div>
-          <span class="metric-change down">↓ 2.1%</span>
-        </div>
-        <div class="metric-card purple">
-          <div class="metric-label">Avg. Click Rate</div>
-          <div class="metric-value" id="m-ctr">4.2%</div>
-          <span class="metric-change up">↑ 0.4%</span>
-        </div>
-        <div class="metric-card teal">
-          <div class="metric-label">Avg. Position</div>
-          <div class="metric-value" id="m-position">14.3</div>
-          <span class="metric-change up">↑ 1.2</span>
+        <div class="section-actions">
+          <select class="filter-select" id="dashSiteFilter" onchange="updateDashboard()">
+            <option value="all">All Websites</option>
+          </select>
         </div>
       </div>
 
+      <div class="stat-grid" id="dashStats">
+        <!-- filled by JS -->
+      </div>
+
       <div class="chart-grid">
-        <div class="chart-card" style="grid-column: 1 / -1;">
-          <div class="chart-card-header">
-            <div>
-              <div class="chart-card-title">Traffic & Engagement Trend</div>
-              <div class="chart-card-sub">Organic sessions + impressions over time</div>
-            </div>
+        <div class="chart-card full">
+          <div class="chart-head">
+            <div><div class="chart-title">Traffic Trend</div><div class="chart-sub">Organic sessions & impressions over time</div></div>
             <span class="chart-tag">All Platforms</span>
           </div>
-          <div style="position:relative; height:220px;">
-            <canvas id="overviewTrendChart" role="img" aria-label="Line chart showing traffic trend over time"></canvas>
-          </div>
+          <div class="chart-wrap" style="height:200px"><canvas id="trendChart"></canvas></div>
         </div>
-
         <div class="chart-card">
-          <div class="chart-card-header">
-            <div>
-              <div class="chart-card-title">Traffic by Channel</div>
-              <div class="chart-card-sub">Session source breakdown</div>
-            </div>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;font-size:11px;color:var(--text-muted);">
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#4f8ef7;display:inline-block;"></span>Organic 48%</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#b8965a;display:inline-block;"></span>Direct 22%</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#34d399;display:inline-block;"></span>Referral 16%</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#e56b6b;display:inline-block;"></span>Social 9%</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#8b6fd4;display:inline-block;"></span>Paid 5%</span>
-          </div>
-          <div style="position:relative; height:180px;">
-            <canvas id="channelChart" role="img" aria-label="Doughnut chart of traffic by channel"></canvas>
-          </div>
+          <div class="chart-head"><div><div class="chart-title">Traffic by Channel</div><div class="chart-sub">Session source</div></div></div>
+          <div class="legend" id="channelLegend"></div>
+          <div class="chart-wrap" style="height:180px"><canvas id="channelChart"></canvas></div>
         </div>
-
         <div class="chart-card">
-          <div class="chart-card-header">
-            <div>
-              <div class="chart-card-title">Conversions Overview</div>
-              <div class="chart-card-sub">Forms + Voice AI per week</div>
-            </div>
-          </div>
-          <div style="position:relative; height:210px;">
-            <canvas id="conversionChart" role="img" aria-label="Bar chart showing weekly conversions"></canvas>
-          </div>
+          <div class="chart-head"><div><div class="chart-title">Weekly Conversions</div><div class="chart-sub">Forms + Voice calls</div></div></div>
+          <div class="chart-wrap" style="height:200px"><canvas id="convChart"></canvas></div>
         </div>
       </div>
 
-      <div class="data-table-card">
-        <div class="data-table-header">
-          <div class="data-table-title">Top Performing Pages</div>
-          <span class="badge badge-blue">Last 28 days</span>
+      <div class="table-card">
+        <div class="table-head"><div class="table-title">Top Performing Pages</div><span class="badge badge-blue">Live Data</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Page</th><th>Sessions</th><th>Impressions</th><th>CTR</th><th>Position</th><th>Status</th></tr></thead>
+            <tbody id="topPagesTable"></tbody>
+          </table>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Page</th>
-              <th>Sessions</th>
-              <th>Impressions</th>
-              <th>CTR</th>
-              <th>Avg. Position</th>
-            </tr>
-          </thead>
-          <tbody id="top-pages-table">
-            <tr>
-              <td><div class="td-primary">/services/digital-marketing</div><div class="td-url">techflowdigital.com</div></td>
-              <td>4,821</td>
-              <td>38,400</td>
-              <td><span class="badge badge-green">6.8%</span></td>
-              <td>4.2</td>
-            </tr>
-            <tr>
-              <td><div class="td-primary">/blog/seo-guide-2024</div><div class="td-url">techflowdigital.com</div></td>
-              <td>3,102</td>
-              <td>24,100</td>
-              <td><span class="badge badge-green">5.1%</span></td>
-              <td>7.8</td>
-            </tr>
-            <tr>
-              <td><div class="td-primary">/treatments/physiotherapy</div><div class="td-url">greenleafclinic.com</div></td>
-              <td>2,887</td>
-              <td>19,900</td>
-              <td><span class="badge badge-amber">3.2%</span></td>
-              <td>11.4</td>
-            </tr>
-            <tr>
-              <td><div class="td-primary">/membership</div><div class="td-url">urbanfitness.co</div></td>
-              <td>2,214</td>
-              <td>17,200</td>
-              <td><span class="badge badge-amber">2.9%</span></td>
-              <td>13.7</td>
-            </tr>
-            <tr>
-              <td><div class="td-primary">/contact</div><div class="td-url">brightlegalgroup.com</div></td>
-              <td>1,876</td>
-              <td>9,800</td>
-              <td><span class="badge badge-green">4.4%</span></td>
-              <td>9.1</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
 
-    <!-- SEARCH CONSOLE PANEL -->
-    <div class="platform-panel" id="panel-gsc">
-      <div class="summary-strip">
-        <div class="metric-card blue">
-          <div class="metric-label">Total Impressions</div>
-          <div class="metric-value">1.18M</div>
-          <span class="metric-change up">↑ 14.2%</span>
+    <!-- ── ALL SITES ─────────────────────────────────────────── -->
+    <div class="page" id="page-sites">
+      <div class="section-head">
+        <div>
+          <div class="section-title">All Websites</div>
+          <div class="section-sub" id="sitesCount">Loading…</div>
         </div>
-        <div class="metric-card gold">
-          <div class="metric-label">Total Clicks</div>
-          <div class="metric-value">49.5K</div>
-          <span class="metric-change up">↑ 9.8%</span>
-        </div>
-        <div class="metric-card sage">
-          <div class="metric-label">Avg. CTR</div>
-          <div class="metric-value">4.2%</div>
-          <span class="metric-change up">↑ 0.3%</span>
-        </div>
-        <div class="metric-card rose">
-          <div class="metric-label">Avg. Position</div>
-          <div class="metric-value">14.3</div>
-          <span class="metric-change up">↑ 1.8</span>
+        <div class="section-actions">
+          <button class="topbar-btn btn-primary" onclick="openAddSite()">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Add Website
+          </button>
         </div>
       </div>
 
+      <div class="sites-toolbar">
+        <div class="filter-wrap">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5l4 4"/></svg>
+          <input class="filter-input" id="siteFilter" placeholder="Search websites…" oninput="filterSites()">
+        </div>
+        <select class="filter-select" id="statusFilter" onchange="filterSites()">
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+        <select class="filter-select" id="sortFilter" onchange="filterSites()">
+          <option value="name">Sort: Name</option>
+          <option value="sessions">Sort: Sessions</option>
+          <option value="impressions">Sort: Impressions</option>
+        </select>
+        <span class="page-info" id="sitesShownInfo"></span>
+      </div>
+
+      <div class="sites-grid" id="sitesGrid"></div>
+      <div class="pagination" id="sitesPagination"></div>
+    </div>
+
+    <!-- ── SITE DETAIL ─────────────────────────────────────── -->
+    <div class="page" id="page-site-detail">
+      <button class="back-btn" onclick="showPage('sites')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Back to All Websites
+      </button>
+      <div class="section-head">
+        <div>
+          <div class="section-title" id="detailSiteName">—</div>
+          <div class="section-sub" id="detailSiteDomain">—</div>
+        </div>
+        <div class="section-actions">
+          <button class="topbar-btn btn-outline" onclick="exportSitePDF()">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export PDF
+          </button>
+          <button class="topbar-btn btn-primary" onclick="openPresentForSite()">Present Site</button>
+        </div>
+      </div>
+
+      <div class="ptab-bar" id="detailTabs">
+        <button class="ptab active" data-dtab="overview" onclick="switchDetailTab('overview')"><span class="ptab-dot" style="background:var(--gold)"></span>Overview</button>
+        <button class="ptab" data-dtab="gsc" onclick="switchDetailTab('gsc')"><span class="ptab-dot" style="background:var(--accent)"></span>Search Console</button>
+        <button class="ptab" data-dtab="ga4" onclick="switchDetailTab('ga4')"><span class="ptab-dot" style="background:var(--orange)"></span>GA4 Analytics</button>
+        <button class="ptab" data-dtab="ghl" onclick="switchDetailTab('ghl')"><span class="ptab-dot" style="background:var(--green)"></span>Voice AI</button>
+        <button class="ptab" data-dtab="forms" onclick="switchDetailTab('forms')"><span class="ptab-dot" style="background:var(--purple)"></span>Gravity Forms</button>
+      </div>
+
+      <div id="detail-tab-overview" class="detail-tab-panel">
+        <div class="stat-grid" id="detailStats"></div>
+        <div class="chart-grid">
+          <div class="chart-card full">
+            <div class="chart-head"><div><div class="chart-title">Traffic Trend</div><div class="chart-sub">Sessions over time</div></div></div>
+            <div class="chart-wrap" style="height:200px"><canvas id="detailTrendChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <div id="detail-tab-gsc" class="detail-tab-panel" style="display:none">
+        <div class="stat-grid" id="gscStats"></div>
+        <div class="chart-grid">
+          <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Impressions vs Clicks</div></div></div><div class="chart-wrap" style="height:200px"><canvas id="gscChart1"></canvas></div></div>
+          <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Position Distribution</div></div></div><div class="chart-wrap" style="height:200px"><canvas id="gscChart2"></canvas></div></div>
+        </div>
+        <div class="table-card">
+          <div class="table-head"><div class="table-title">Top Queries</div><span class="badge badge-blue">GSC</span></div>
+          <div class="table-wrap"><table><thead><tr><th>Query</th><th>Clicks</th><th>Impressions</th><th>CTR</th><th>Position</th></tr></thead><tbody id="gscQueriesTable"></tbody></table></div>
+        </div>
+      </div>
+      <div id="detail-tab-ga4" class="detail-tab-panel" style="display:none">
+        <div class="stat-grid" id="ga4Stats"></div>
+        <div class="chart-grid">
+          <div class="chart-card full"><div class="chart-head"><div><div class="chart-title">Sessions Over Time</div></div></div><div class="chart-wrap" style="height:200px"><canvas id="ga4Chart1"></canvas></div></div>
+          <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Device Breakdown</div></div></div><div class="legend" id="deviceLegend"></div><div class="chart-wrap" style="height:180px"><canvas id="ga4Chart2"></canvas></div></div>
+          <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Top Countries</div></div></div><div class="chart-wrap" style="height:200px"><canvas id="ga4Chart3"></canvas></div></div>
+        </div>
+      </div>
+      <div id="detail-tab-ghl" class="detail-tab-panel" style="display:none">
+        <div class="stat-grid" id="ghlStats"></div>
+        <div class="chart-grid">
+          <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Daily Call Volume</div></div></div><div class="chart-wrap" style="height:200px"><canvas id="ghlChart1"></canvas></div></div>
+          <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Call Outcomes</div></div></div><div class="legend" id="ghlLegend"></div><div class="chart-wrap" style="height:180px"><canvas id="ghlChart2"></canvas></div></div>
+        </div>
+        <div class="table-card">
+          <div class="table-head"><div class="table-title">Recent Calls</div><span class="badge badge-green">Voice AI</span></div>
+          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Duration</th><th>Outcome</th><th>Sentiment</th><th>AI Resolved</th></tr></thead><tbody id="ghlCallsTable"></tbody></table></div>
+        </div>
+      </div>
+      <div id="detail-tab-forms" class="detail-tab-panel" style="display:none">
+        <div class="stat-grid" id="formsStats"></div>
+        <div class="chart-grid">
+          <div class="chart-card full"><div class="chart-head"><div><div class="chart-title">Submissions by Form</div></div></div><div class="chart-wrap" style="height:220px"><canvas id="formsChart1"></canvas></div></div>
+          <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Daily Trend</div></div></div><div class="chart-wrap" style="height:200px"><canvas id="formsChart2"></canvas></div></div>
+          <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Completion Rate</div></div></div><div class="chart-wrap" style="height:200px"><canvas id="formsChart3"></canvas></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SEARCH CONSOLE ─────────────────────────────────── -->
+    <div class="page" id="page-gsc">
+      <div class="section-head"><div><div class="section-title">Google Search Console</div><div class="section-sub">Aggregated across all sites</div></div></div>
+      <div class="stat-grid">
+        <div class="stat-card c-blue"><div class="stat-label">Total Impressions</div><div class="stat-value">2.4M</div><span class="stat-change up">↑ 14.2%</span></div>
+        <div class="stat-card c-gold"><div class="stat-label">Total Clicks</div><div class="stat-value">98.2K</div><span class="stat-change up">↑ 9.8%</span></div>
+        <div class="stat-card c-green"><div class="stat-label">Avg. CTR</div><div class="stat-value">4.1%</div><span class="stat-change up">↑ 0.3%</span></div>
+        <div class="stat-card c-purple"><div class="stat-label">Avg. Position</div><div class="stat-value">14.3</div><span class="stat-change up">↑ 1.8</span></div>
+      </div>
       <div class="chart-grid">
-        <div class="chart-card">
-          <div class="chart-card-header">
-            <div><div class="chart-card-title">Impressions vs Clicks</div><div class="chart-card-sub">28-day trend</div></div>
-          </div>
-          <div style="position:relative; height:200px;">
-            <canvas id="gscTrendChart" role="img" aria-label="Line chart: impressions vs clicks over 28 days"></canvas>
-          </div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-card-header">
-            <div><div class="chart-card-title">Position Distribution</div><div class="chart-card-sub">Queries by rank bucket</div></div>
-          </div>
-          <div style="position:relative; height:200px;">
-            <canvas id="positionChart" role="img" aria-label="Bar chart: query distribution by position bucket"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <div class="data-table-card">
-        <div class="data-table-header">
-          <div class="data-table-title">Top Search Queries</div>
-          <span class="badge badge-blue">Search Console</span>
-        </div>
-        <table>
-          <thead><tr><th>Query</th><th>Clicks</th><th>Impressions</th><th>CTR</th><th>Position</th></tr></thead>
-          <tbody>
-            <tr><td class="td-primary">digital marketing agency</td><td>1,240</td><td>18,200</td><td><span class="badge badge-green">6.8%</span></td><td>3.1</td></tr>
-            <tr><td class="td-primary">seo services near me</td><td>980</td><td>14,100</td><td><span class="badge badge-green">6.9%</span></td><td>4.7</td></tr>
-            <tr><td class="td-primary">physiotherapy clinic</td><td>760</td><td>11,800</td><td><span class="badge badge-amber">3.8%</span></td><td>8.2</td></tr>
-            <tr><td class="td-primary">personal trainer membership</td><td>540</td><td>9,400</td><td><span class="badge badge-amber">2.9%</span></td><td>12.4</td></tr>
-            <tr><td class="td-primary">employment lawyer consultation</td><td>420</td><td>8,700</td><td><span class="badge badge-amber">3.1%</span></td><td>11.9</td></tr>
-            <tr><td class="td-primary">web design services</td><td>380</td><td>7,200</td><td><span class="badge badge-amber">3.5%</span></td><td>15.2</td></tr>
-          </tbody>
-        </table>
+        <div class="chart-card full"><div class="chart-head"><div><div class="chart-title">Impressions & Clicks Trend</div></div><span class="chart-tag">28 days</span></div><div class="chart-wrap" style="height:200px"><canvas id="gscGlobalChart"></canvas></div></div>
+        <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Position Distribution</div><div class="chart-sub">All sites</div></div></div><div class="chart-wrap" style="height:200px"><canvas id="posChart"></canvas></div></div>
+        <div class="chart-card"><div class="chart-head"><div><div class="chart-title">CTR by Site</div></div></div><div class="chart-wrap" style="height:200px"><canvas id="ctrSiteChart"></canvas></div></div>
       </div>
     </div>
 
-    <!-- GA4 PANEL -->
-    <div class="platform-panel" id="panel-ga4">
-      <div class="summary-strip">
-        <div class="metric-card gold">
-          <div class="metric-label">Total Sessions</div>
-          <div class="metric-value">86.2K</div>
-          <span class="metric-change up">↑ 8.7%</span>
-        </div>
-        <div class="metric-card sage">
-          <div class="metric-label">Users</div>
-          <div class="metric-value">61.4K</div>
-          <span class="metric-change up">↑ 6.1%</span>
-        </div>
-        <div class="metric-card blue">
-          <div class="metric-label">Bounce Rate</div>
-          <div class="metric-value">42.1%</div>
-          <span class="metric-change down">↓ 2.3%</span>
-        </div>
-        <div class="metric-card rose">
-          <div class="metric-label">Avg. Session</div>
-          <div class="metric-value">2m 41s</div>
-          <span class="metric-change up">↑ 18s</span>
-        </div>
-        <div class="metric-card purple">
-          <div class="metric-label">Conversions</div>
-          <div class="metric-value">2,189</div>
-          <span class="metric-change up">↑ 5.4%</span>
-        </div>
-        <div class="metric-card teal">
-          <div class="metric-label">Conv. Rate</div>
-          <div class="metric-value">2.54%</div>
-          <span class="metric-change up">↑ 0.2%</span>
-        </div>
+    <!-- ── GA4 ────────────────────────────────────────────── -->
+    <div class="page" id="page-ga4">
+      <div class="section-head"><div><div class="section-title">Google Analytics 4</div><div class="section-sub">Audience & behavior across all sites</div></div></div>
+      <div class="stat-grid">
+        <div class="stat-card c-gold"><div class="stat-label">Total Sessions</div><div class="stat-value">172K</div><span class="stat-change up">↑ 8.7%</span></div>
+        <div class="stat-card c-teal"><div class="stat-label">Users</div><div class="stat-value">128K</div><span class="stat-change up">↑ 6.1%</span></div>
+        <div class="stat-card c-blue"><div class="stat-label">Bounce Rate</div><div class="stat-value">42.1%</div><span class="stat-change down">↓ 2.3%</span></div>
+        <div class="stat-card c-green"><div class="stat-label">Avg. Session</div><div class="stat-value">2m 41s</div><span class="stat-change up">↑ 18s</span></div>
+        <div class="stat-card c-purple"><div class="stat-label">Conversions</div><div class="stat-value">4,380</div><span class="stat-change up">↑ 5.4%</span></div>
+        <div class="stat-card c-orange"><div class="stat-label">Conv. Rate</div><div class="stat-value">2.54%</div><span class="stat-change up">↑ 0.2%</span></div>
       </div>
-
       <div class="chart-grid">
-        <div class="chart-card" style="grid-column: 1 / -1;">
-          <div class="chart-card-header">
-            <div><div class="chart-card-title">Sessions Over Time</div><div class="chart-card-sub">Users and new users</div></div>
-            <span class="chart-tag">GA4</span>
-          </div>
-          <div style="position:relative; height:200px;">
-            <canvas id="ga4SessionChart" role="img" aria-label="Line chart: sessions over time"></canvas>
-          </div>
-        </div>
-
-        <div class="chart-card">
-          <div class="chart-card-header">
-            <div><div class="chart-card-title">Device Breakdown</div></div>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;font-size:11px;color:var(--text-muted);">
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#4f8ef7;display:inline-block;"></span>Mobile 58%</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#b8965a;display:inline-block;"></span>Desktop 35%</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#34d399;display:inline-block;"></span>Tablet 7%</span>
-          </div>
-          <div style="position:relative; height:180px;">
-            <canvas id="deviceChart" role="img" aria-label="Doughnut chart of device breakdown"></canvas>
-          </div>
-        </div>
-
-        <div class="chart-card">
-          <div class="chart-card-header">
-            <div><div class="chart-card-title">Top Countries</div><div class="chart-card-sub">Sessions by location</div></div>
-          </div>
-          <div style="position:relative; height:200px;">
-            <canvas id="countryChart" role="img" aria-label="Horizontal bar chart of sessions by country"></canvas>
-          </div>
-        </div>
+        <div class="chart-card full"><div class="chart-head"><div><div class="chart-title">Sessions & Users Over Time</div></div><span class="chart-tag">GA4</span></div><div class="chart-wrap" style="height:200px"><canvas id="ga4GlobalChart"></canvas></div></div>
+        <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Device Split</div></div></div><div class="legend" id="deviceLegend2"></div><div class="chart-wrap" style="height:180px"><canvas id="deviceChart2"></canvas></div></div>
+        <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Top Countries</div></div></div><div class="chart-wrap" style="height:200px"><canvas id="countryChart2"></canvas></div></div>
       </div>
     </div>
 
-    <!-- GHL VOICE AI PANEL -->
-    <div class="platform-panel" id="panel-ghl">
-      <div class="summary-strip">
-        <div class="metric-card sage">
-          <div class="metric-label">Total Calls</div>
-          <div class="metric-value">342</div>
-          <span class="metric-change down">↓ 2.1%</span>
-        </div>
-        <div class="metric-card gold">
-          <div class="metric-label">Answered Rate</div>
-          <div class="metric-value">78.4%</div>
-          <span class="metric-change up">↑ 3.1%</span>
-        </div>
-        <div class="metric-card blue">
-          <div class="metric-label">Avg. Duration</div>
-          <div class="metric-value">4m 12s</div>
-          <span class="metric-change up">↑ 22s</span>
-        </div>
-        <div class="metric-card rose">
-          <div class="metric-label">Qualified Leads</div>
-          <div class="metric-value">94</div>
-          <span class="metric-change up">↑ 8.4%</span>
-        </div>
-        <div class="metric-card purple">
-          <div class="metric-label">Booked Apts</div>
-          <div class="metric-value">61</div>
-          <span class="metric-change up">↑ 12.1%</span>
-        </div>
-        <div class="metric-card teal">
-          <div class="metric-label">AI Resolution</div>
-          <div class="metric-value">67.8%</div>
-          <span class="metric-change up">↑ 4.2%</span>
-        </div>
+    <!-- ── GHL ───────────────────────────────────────────── -->
+    <div class="page" id="page-ghl">
+      <div class="section-head"><div><div class="section-title">GHL Voice AI</div><div class="section-sub">Call tracking & AI resolution</div></div></div>
+      <div class="stat-grid">
+        <div class="stat-card c-green"><div class="stat-label">Total Calls</div><div class="stat-value">684</div><span class="stat-change down">↓ 2.1%</span></div>
+        <div class="stat-card c-gold"><div class="stat-label">Answered Rate</div><div class="stat-value">78.4%</div><span class="stat-change up">↑ 3.1%</span></div>
+        <div class="stat-card c-blue"><div class="stat-label">Avg. Duration</div><div class="stat-value">4m 12s</div><span class="stat-change up">↑ 22s</span></div>
+        <div class="stat-card c-purple"><div class="stat-label">Qualified Leads</div><div class="stat-value">188</div><span class="stat-change up">↑ 8.4%</span></div>
+        <div class="stat-card c-teal"><div class="stat-label">Booked Apts</div><div class="stat-value">122</div><span class="stat-change up">↑ 12.1%</span></div>
+        <div class="stat-card c-orange"><div class="stat-label">AI Resolution</div><div class="stat-value">67.8%</div><span class="stat-change up">↑ 4.2%</span></div>
       </div>
-
       <div class="chart-grid">
-        <div class="chart-card">
-          <div class="chart-card-header">
-            <div><div class="chart-card-title">Call Volume by Day</div><div class="chart-card-sub">Daily call trend</div></div>
-          </div>
-          <div style="position:relative; height:200px;">
-            <canvas id="ghlCallChart" role="img" aria-label="Bar chart of daily voice AI calls"></canvas>
-          </div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-card-header">
-            <div><div class="chart-card-title">Call Outcome Distribution</div></div>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;font-size:11px;color:var(--text-muted);">
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#34d399;display:inline-block;"></span>Booked 18%</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#4f8ef7;display:inline-block;"></span>Qualified 28%</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#b8965a;display:inline-block;"></span>Info Only 32%</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#e56b6b;display:inline-block;"></span>No Answer 22%</span>
-          </div>
-          <div style="position:relative; height:180px;">
-            <canvas id="callOutcomeChart" role="img" aria-label="Doughnut chart of call outcomes"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <div class="data-table-card">
-        <div class="data-table-header">
-          <div class="data-table-title">Recent Voice AI Interactions</div>
-          <span class="badge badge-green">GHL Connected</span>
-        </div>
-        <table>
-          <thead><tr><th>Date</th><th>Site</th><th>Duration</th><th>Outcome</th><th>Sentiment</th></tr></thead>
-          <tbody>
-            <tr><td>22 May 2026</td><td class="td-primary">greenleafclinic.com</td><td>5m 42s</td><td><span class="badge badge-green">Booked</span></td><td>😊 Positive</td></tr>
-            <tr><td>22 May 2026</td><td class="td-primary">brightlegalgroup.com</td><td>3m 18s</td><td><span class="badge badge-blue">Qualified</span></td><td>😐 Neutral</td></tr>
-            <tr><td>21 May 2026</td><td class="td-primary">urbanfitness.co</td><td>2m 05s</td><td><span class="badge badge-amber">Info Only</span></td><td>😊 Positive</td></tr>
-            <tr><td>21 May 2026</td><td class="td-primary">techflowdigital.com</td><td>0m 48s</td><td><span class="badge badge-red">No Answer</span></td><td>— N/A</td></tr>
-            <tr><td>20 May 2026</td><td class="td-primary">greenleafclinic.com</td><td>6m 11s</td><td><span class="badge badge-green">Booked</span></td><td>😊 Positive</td></tr>
-          </tbody>
-        </table>
+        <div class="chart-card full"><div class="chart-head"><div><div class="chart-title">Call Volume Trend</div></div><span class="chart-tag">14 days</span></div><div class="chart-wrap" style="height:200px"><canvas id="ghlGlobalChart"></canvas></div></div>
+        <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Outcome Distribution</div></div></div><div class="legend" id="ghlGlobalLegend"></div><div class="chart-wrap" style="height:180px"><canvas id="ghlOutcomeChart"></canvas></div></div>
+        <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Calls per Site</div></div></div><div class="chart-wrap" style="height:200px"><canvas id="ghlSiteChart"></canvas></div></div>
       </div>
     </div>
 
-    <!-- GRAVITY FORMS PANEL -->
-    <div class="platform-panel" id="panel-wp">
-      <div class="summary-strip">
-        <div class="metric-card purple">
-          <div class="metric-label">Total Submissions</div>
-          <div class="metric-value">1,847</div>
-          <span class="metric-change up">↑ 3.2%</span>
-        </div>
-        <div class="metric-card gold">
-          <div class="metric-label">Completion Rate</div>
-          <div class="metric-value">71.4%</div>
-          <span class="metric-change up">↑ 1.8%</span>
-        </div>
-        <div class="metric-card sage">
-          <div class="metric-label">Avg. Time to Complete</div>
-          <div class="metric-value">1m 52s</div>
-          <span class="metric-change down">↓ 8s</span>
-        </div>
-        <div class="metric-card rose">
-          <div class="metric-label">Abandonment Rate</div>
-          <div class="metric-value">28.6%</div>
-          <span class="metric-change up">↑ 0.4%</span>
-        </div>
+    <!-- ── GRAVITY FORMS ──────────────────────────────────── -->
+    <div class="page" id="page-gravity">
+      <div class="section-head"><div><div class="section-title">Gravity Forms</div><div class="section-sub">Form submission tracking</div></div></div>
+      <div class="stat-grid">
+        <div class="stat-card c-purple"><div class="stat-label">Total Submissions</div><div class="stat-value">3,694</div><span class="stat-change up">↑ 3.2%</span></div>
+        <div class="stat-card c-gold"><div class="stat-label">Completion Rate</div><div class="stat-value">71.4%</div><span class="stat-change up">↑ 1.8%</span></div>
+        <div class="stat-card c-teal"><div class="stat-label">Avg. Time</div><div class="stat-value">1m 52s</div><span class="stat-change down">↓ 8s</span></div>
+        <div class="stat-card c-red"><div class="stat-label">Abandonment</div><div class="stat-value">28.6%</div><span class="stat-change flat">→ 0.4%</span></div>
       </div>
-
       <div class="chart-grid">
-        <div class="chart-card" style="grid-column: 1 / -1;">
-          <div class="chart-card-header">
-            <div><div class="chart-card-title">Submissions by Form</div><div class="chart-card-sub">All sites — top 6 forms</div></div>
-          </div>
-          <div style="position:relative; height:220px;">
-            <canvas id="formsBarChart" role="img" aria-label="Horizontal bar chart of submissions per form"></canvas>
-          </div>
+        <div class="chart-card full"><div class="chart-head"><div><div class="chart-title">Submissions by Form</div></div></div><div class="chart-wrap" style="height:220px"><canvas id="gravityFormsChart"></canvas></div></div>
+        <div class="chart-card"><div class="chart-head"><div><div class="chart-title">Daily Trend</div></div></div><div class="chart-wrap" style="height:200px"><canvas id="gravityTrendChart"></canvas></div></div>
+        <div class="chart-card"><div class="chart-head"><div><div class="chart-title">By Site</div></div></div><div class="legend" id="gravSiteLegend"></div><div class="chart-wrap" style="height:180px"><canvas id="gravitySiteChart"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- ── PRESENTATION ──────────────────────────────────── -->
+    <div class="page" id="page-presentation">
+      <div class="section-head">
+        <div>
+          <div class="section-title">Presentation Builder</div>
+          <div class="section-sub">Build slide decks from your analytics data</div>
         </div>
-        <div class="chart-card">
-          <div class="chart-card-header">
-            <div><div class="chart-card-title">Daily Submission Trend</div></div>
-          </div>
-          <div style="position:relative; height:200px;">
-            <canvas id="formsTrendChart" role="img" aria-label="Line chart of daily form submissions"></canvas>
-          </div>
+        <div class="section-actions">
+          <select class="filter-select" id="presSiteSelect" onchange="buildPresentation()">
+            <option value="all">All Sites Combined</option>
+          </select>
+          <button class="topbar-btn btn-outline" onclick="downloadPresAsPDF()">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PDF
+          </button>
+          <button class="topbar-btn btn-primary" onclick="fullscreenPres()">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 00-2 2v3M21 8V5a2 2 0 00-2-2h-3M3 16v3a2 2 0 002 2h3M16 21h3a2 2 0 002-2v-3"/></svg>
+            Fullscreen
+          </button>
         </div>
-        <div class="chart-card">
-          <div class="chart-card-header">
-            <div><div class="chart-card-title">Submissions by Site</div></div>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;font-size:11px;color:var(--text-muted);">
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#8b6fd4;display:inline-block;"></span>techflow 38%</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#34d399;display:inline-block;"></span>greenleaf 29%</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#b8965a;display:inline-block;"></span>urbanfit 19%</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#4f8ef7;display:inline-block;"></span>brightlegal 14%</span>
-          </div>
-          <div style="position:relative; height:170px;">
-            <canvas id="formsSiteChart" role="img" aria-label="Doughnut chart of submissions by site"></canvas>
+      </div>
+      <div class="pres-builder">
+        <div class="pres-slides" id="slidesList"></div>
+        <div class="pres-canvas">
+          <div class="pres-frame" id="presFrame"></div>
+          <div class="pres-controls">
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="topbar-btn btn-outline" onclick="prevSlide()">← Prev</button>
+              <span style="font-size:12px;color:var(--text3)" id="slideCounter">1 / 5</span>
+              <button class="topbar-btn btn-outline" onclick="nextSlide()">Next →</button>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="topbar-btn btn-outline" onclick="addSlide()">+ Add Slide</button>
+              <button class="topbar-btn btn-gold" onclick="downloadPresAsPDF()">Download PDF</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- INTEGRATIONS PANEL -->
-    <div class="platform-panel" id="panel-integrations">
-      <div style="margin-bottom:20px;">
-        <div style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; margin-bottom:4px;">Platform Integrations</div>
-        <div style="font-size:13px; color:var(--text-muted);">Manage data source connections for all your websites.</div>
+    <!-- ── INTEGRATIONS ───────────────────────────────────── -->
+    <div class="page" id="page-integrations">
+      <div class="section-head">
+        <div><div class="section-title">Integrations</div><div class="section-sub">Manage platform connections</div></div>
       </div>
-
-      <div class="integrations-grid">
-        <div class="integration-card">
-          <div class="integration-card-top">
-            <div class="platform-icon gsc">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#4f8ef7" stroke-width="2"/><path d="M16.5 16.5l4 4" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <div class="integration-name">Google Search Console</div>
-              <div class="integration-status">Search performance data</div>
-            </div>
+      <div class="integ-grid">
+        <div class="integ-card">
+          <div class="integ-top">
+            <div class="integ-icon" style="background:rgba(108,143,255,0.15)"><svg width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5l4 4"/></svg></div>
+            <div><div class="integ-name">Google Search Console</div><div class="integ-desc">Search performance</div></div>
           </div>
-          <div class="connection-status"><span class="dot-live"></span><span style="color:#16a34a; font-weight:500;">Connected</span> — 4 properties</div>
-          <div style="margin-bottom:10px; font-size:12px; color:var(--text-muted);">Last synced: 2 hours ago</div>
-          <div class="progress-bar" style="margin-bottom:12px;"><div class="progress-fill" style="width:100%; background:#34d399;"></div></div>
-          <button class="connect-btn connected">✓ Manage Connection</button>
+          <div class="integ-status"><span class="dot-on"></span><span style="color:var(--green);font-weight:500">Connected</span> — 4 properties</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Last sync: 2 hours ago</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div>
+          <button class="integ-btn connected">✓ Manage</button>
         </div>
-
-        <div class="integration-card">
-          <div class="integration-card-top">
-            <div class="platform-icon ga4">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 21V8l9-5 9 5v13" stroke="#f4952a" stroke-width="2" stroke-linejoin="round"/><path d="M9 21v-6h6v6" stroke="#f4952a" stroke-width="2"/></svg>
-            </div>
-            <div>
-              <div class="integration-name">Google Analytics 4</div>
-              <div class="integration-status">Audience & behavior data</div>
-            </div>
+        <div class="integ-card">
+          <div class="integ-top">
+            <div class="integ-icon" style="background:rgba(251,146,60,0.15)"><svg width="18" height="18" fill="none" stroke="var(--orange)" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13M9 21v-6h6v6"/></svg></div>
+            <div><div class="integ-name">Google Analytics 4</div><div class="integ-desc">Audience & behavior</div></div>
           </div>
-          <div class="connection-status"><span class="dot-live"></span><span style="color:#16a34a; font-weight:500;">Connected</span> — 4 properties</div>
-          <div style="margin-bottom:10px; font-size:12px; color:var(--text-muted);">Last synced: 1 hour ago</div>
-          <div class="progress-bar" style="margin-bottom:12px;"><div class="progress-fill" style="width:100%; background:#34d399;"></div></div>
-          <button class="connect-btn connected">✓ Manage Connection</button>
+          <div class="integ-status"><span class="dot-on"></span><span style="color:var(--green);font-weight:500">Connected</span> — 4 properties</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Last sync: 1 hour ago</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div>
+          <button class="integ-btn connected">✓ Manage</button>
         </div>
-
-        <div class="integration-card">
-          <div class="integration-card-top">
-            <div class="platform-icon ghl">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 18l9-9 3 3 6-6" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 6h4v4" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div>
-              <div class="integration-name">GoHighLevel Voice AI</div>
-              <div class="integration-status">Call tracking & AI reporting</div>
-            </div>
+        <div class="integ-card">
+          <div class="integ-top">
+            <div class="integ-icon" style="background:rgba(62,207,142,0.15)"><svg width="18" height="18" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.23 11.5"/></svg></div>
+            <div><div class="integ-name">GoHighLevel Voice AI</div><div class="integ-desc">Call tracking</div></div>
           </div>
-          <div class="connection-status"><span class="dot-live"></span><span style="color:#16a34a; font-weight:500;">Connected</span> — API key active</div>
-          <div style="margin-bottom:10px; font-size:12px; color:var(--text-muted);">Last synced: 30 min ago</div>
-          <div class="progress-bar" style="margin-bottom:12px;"><div class="progress-fill" style="width:100%; background:#34d399;"></div></div>
-          <button class="connect-btn connected">✓ Manage Connection</button>
+          <div class="integ-status"><span class="dot-on"></span><span style="color:var(--green);font-weight:500">Connected</span> — API active</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Last sync: 30 min ago</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div>
+          <button class="integ-btn connected">✓ Manage</button>
         </div>
-
-        <div class="integration-card">
-          <div class="integration-card-top">
-            <div class="platform-icon wp">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#4f8ef7" stroke-width="2"/><path d="M9 9h6M9 12h4M9 15h5" stroke="#4f8ef7" stroke-width="1.5" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <div class="integration-name">WordPress Gravity Forms</div>
-              <div class="integration-status">Form submission tracking</div>
-            </div>
+        <div class="integ-card">
+          <div class="integ-top">
+            <div class="integ-icon" style="background:rgba(167,139,250,0.15)"><svg width="18" height="18" fill="none" stroke="var(--purple)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h4M9 15h5"/></svg></div>
+            <div><div class="integ-name">Gravity Forms (WordPress)</div><div class="integ-desc">Form submissions</div></div>
           </div>
-          <div class="connection-status"><span class="dot-live"></span><span style="color:#16a34a; font-weight:500;">Connected</span> — 4 sites, 12 forms</div>
-          <div style="margin-bottom:10px; font-size:12px; color:var(--text-muted);">Last synced: 45 min ago</div>
-          <div class="progress-bar" style="margin-bottom:12px;"><div class="progress-fill" style="width:100%; background:#34d399;"></div></div>
-          <button class="connect-btn connected">✓ Manage Connection</button>
+          <div class="integ-status"><span class="dot-on"></span><span style="color:var(--green);font-weight:500">Connected</span> — 12 forms</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Last sync: 45 min ago</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div>
+          <button class="integ-btn connected">✓ Manage</button>
         </div>
-
-        <div class="integration-card">
-          <div class="integration-card-top">
-            <div class="platform-icon" style="background:#fef3f2;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="#e56b6b" stroke-width="2"/><path d="M8 21h8M12 17v4" stroke="#e56b6b" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <div class="integration-name">Google Tag Manager</div>
-              <div class="integration-status">Event tracking</div>
-            </div>
+        <div class="integ-card">
+          <div class="integ-top">
+            <div class="integ-icon" style="background:rgba(255,107,107,0.15)"><svg width="18" height="18" fill="none" stroke="var(--red)" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+            <div><div class="integ-name">Google Tag Manager</div><div class="integ-desc">Event tracking</div></div>
           </div>
-          <div class="connection-status"><span class="dot-off"></span><span style="color:var(--text-muted);">Not connected</span></div>
-          <div style="margin-bottom:10px; font-size:12px; color:var(--text-muted);">Connect to track custom events</div>
-          <div class="progress-bar" style="margin-bottom:12px;"><div class="progress-fill" style="width:0%; background:#e56b6b;"></div></div>
-          <button class="connect-btn" onclick="openConnectModal('Google Tag Manager')">+ Connect Platform</button>
+          <div class="integ-status"><span class="dot-off"></span><span style="color:var(--text3)">Not connected</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Connect for custom events</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:0%;background:var(--red)"></div></div>
+          <button class="integ-btn" onclick="openConnectModal('Google Tag Manager')">+ Connect</button>
         </div>
-
-        <div class="integration-card">
-          <div class="integration-card-top">
-            <div class="platform-icon" style="background:#fdf4ff;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#8b6fd4" stroke-width="2"/><path d="M8 12h8M12 8v8" stroke="#8b6fd4" stroke-width="2" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <div class="integration-name">Custom Webhook</div>
-              <div class="integration-status">Any data source</div>
-            </div>
+        <div class="integ-card">
+          <div class="integ-top">
+            <div class="integ-icon" style="background:rgba(45,212,191,0.15)"><svg width="18" height="18" fill="none" stroke="var(--teal)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg></div>
+            <div><div class="integ-name">Custom Webhook</div><div class="integ-desc">Any platform</div></div>
           </div>
-          <div class="connection-status"><span class="dot-off"></span><span style="color:var(--text-muted);">Not connected</span></div>
-          <div style="margin-bottom:10px; font-size:12px; color:var(--text-muted);">Connect any platform via webhook</div>
-          <div class="progress-bar" style="margin-bottom:12px;"><div class="progress-fill" style="width:0%; background:#8b6fd4;"></div></div>
-          <button class="connect-btn" onclick="openConnectModal('Custom Webhook')">+ Connect Platform</button>
+          <div class="integ-status"><span class="dot-off"></span><span style="color:var(--text3)">Not connected</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Connect via webhook URL</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:0%;background:var(--teal)"></div></div>
+          <button class="integ-btn" onclick="openConnectModal('Custom Webhook')">+ Connect</button>
         </div>
       </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- /content -->
+</div><!-- /main -->
 
-<!-- Add Site Modal -->
-<div class="modal-overlay" id="addSiteModal">
+<!-- ── Add Site Modal ──────────────────────────────────────────── -->
+<div class="overlay" id="addSiteOverlay">
   <div class="modal">
-    <div class="modal-header">
+    <div class="modal-hd">
       <span class="modal-title">Add New Website</span>
-      <button class="modal-close" onclick="closeModal('addSiteModal')">✕</button>
+      <button class="modal-x" onclick="closeModal('addSiteOverlay')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-group">
+      <div class="form-row">
         <label class="form-label">Website Name</label>
-        <input type="text" class="form-input" placeholder="e.g. My Agency Site" id="newSiteName">
+        <input class="form-input" id="newName" placeholder="e.g. My Agency Website">
       </div>
-      <div class="form-group">
+      <div class="form-row">
         <label class="form-label">Domain</label>
-        <input type="text" class="form-input" placeholder="e.g. myagencysite.com" id="newSiteDomain">
+        <input class="form-input" id="newDomain" placeholder="e.g. mysite.com">
       </div>
-      <div class="form-group">
-        <label class="form-label" style="margin-bottom:10px;">Connect Platforms</label>
-        <div class="platform-connect-list">
-          <div class="platform-connect-row">
-            <div class="platform-icon gsc" style="width:28px;height:28px;font-size:13px;border-radius:6px;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#4f8ef7" stroke-width="2.5"/><path d="M16.5 16.5l4 4" stroke="#4f8ef7" stroke-width="2.5" stroke-linecap="round"/></svg>
-            </div>
-            <div class="platform-connect-info">
-              <div class="platform-connect-name">Google Search Console</div>
-            </div>
-            <input class="platform-connect-input" type="text" placeholder="Property URL">
-          </div>
-          <div class="platform-connect-row">
-            <div class="platform-icon ga4" style="width:28px;height:28px;font-size:13px;border-radius:6px;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 21V8l9-5 9 5v13" stroke="#f4952a" stroke-width="2.5" stroke-linejoin="round"/></svg>
-            </div>
-            <div class="platform-connect-info">
-              <div class="platform-connect-name">Google Analytics 4</div>
-            </div>
-            <input class="platform-connect-input" type="text" placeholder="Measurement ID">
-          </div>
-          <div class="platform-connect-row">
-            <div class="platform-icon ghl" style="width:28px;height:28px;font-size:13px;border-radius:6px;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 18l9-9 3 3 6-6" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div class="platform-connect-info">
-              <div class="platform-connect-name">GHL Voice AI</div>
-            </div>
-            <input class="platform-connect-input" type="text" placeholder="Location ID">
-          </div>
-          <div class="platform-connect-row">
-            <div class="platform-icon wp" style="width:28px;height:28px;font-size:13px;border-radius:6px;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#4f8ef7" stroke-width="2.5"/></svg>
-            </div>
-            <div class="platform-connect-info">
-              <div class="platform-connect-name">Gravity Forms</div>
-            </div>
-            <input class="platform-connect-input" type="text" placeholder="WP Site URL">
-          </div>
+      <div class="form-row">
+        <label class="form-label" style="margin-bottom:10px">Connect Platforms (optional — add credentials later)</label>
+        <div class="platform-row">
+          <div class="plat-icon-sm plat-gsc">GSC</div>
+          <span class="plat-label">Google Search Console</span>
+          <input class="plat-input" id="gscProp" placeholder="sc-domain:…">
+        </div>
+        <div class="platform-row">
+          <div class="plat-icon-sm plat-ga4">GA4</div>
+          <span class="plat-label">Google Analytics 4</span>
+          <input class="plat-input" id="ga4Id" placeholder="G-XXXXXXXXXX">
+        </div>
+        <div class="platform-row">
+          <div class="plat-icon-sm plat-ghl">GHL</div>
+          <span class="plat-label">GHL Voice AI</span>
+          <input class="plat-input" id="ghlId" placeholder="Location ID">
+        </div>
+        <div class="platform-row">
+          <div class="plat-icon-sm plat-wp">WP</div>
+          <span class="plat-label">Gravity Forms</span>
+          <input class="plat-input" id="wpUrl" placeholder="https://site.com">
         </div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeModal('addSiteModal')">Cancel</button>
-      <button class="btn-primary" onclick="addSite()">Add Website</button>
+    <div class="modal-ft">
+      <button class="topbar-btn btn-outline" onclick="closeModal('addSiteOverlay')">Cancel</button>
+      <button class="topbar-btn btn-primary" onclick="addSite()">Add Website</button>
     </div>
   </div>
 </div>
 
-<!-- Connect Platform Modal -->
-<div class="modal-overlay" id="connectModal">
+<!-- ── Connect Modal ──────────────────────────────────────────── -->
+<div class="overlay" id="connectOverlay">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title" id="connectModalTitle">Connect Platform</span>
-      <button class="modal-close" onclick="closeModal('connectModal')">✕</button>
+    <div class="modal-hd">
+      <span class="modal-title" id="connectTitle">Connect Platform</span>
+      <button class="modal-x" onclick="closeModal('connectOverlay')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-group">
+      <div class="form-row">
         <label class="form-label">API Key / Credentials</label>
-        <input type="text" class="form-input" placeholder="Paste your API key here">
+        <input class="form-input" placeholder="Paste your API key here">
       </div>
-      <div class="form-group">
+      <div class="form-row">
         <label class="form-label">Webhook URL (optional)</label>
-        <input type="text" class="form-input" placeholder="https://your-webhook-endpoint.com">
+        <input class="form-input" placeholder="https://your-endpoint.com/hook">
       </div>
-      <div style="padding:12px 14px; background:var(--mist); border-radius:var(--radius-sm); font-size:12px; color:var(--text-muted);">
-        💡 Once connected, data will sync automatically every hour. Your credentials are stored securely.
+      <div style="padding:11px 14px;background:var(--bg3);border-radius:var(--r8);font-size:12px;color:var(--text3)">
+        💡 Data syncs automatically every hour. Credentials are stored securely.
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeModal('connectModal')">Cancel</button>
-      <button class="btn-primary">Connect</button>
+    <div class="modal-ft">
+      <button class="topbar-btn btn-outline" onclick="closeModal('connectOverlay')">Cancel</button>
+      <button class="topbar-btn btn-primary">Connect</button>
     </div>
   </div>
 </div>
 
-<!-- PDF toast -->
-<div class="pdf-toast" id="pdfToast">
-  <div class="pdf-spinner"></div>
-  <span id="pdfToastMsg">Generating PDF report…</span>
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="toast-spin" id="toastSpin"></div>
+  <span id="toastMsg">—</span>
 </div>
 
 <script>
-// ── State ──────────────────────────────────────────────────────
-let currentTab = 'overview';
-let charts = {};
+// ═══════════════════════════════════════════════════════════════
+// DATA ENGINE — seeded random for consistent per-site data
+// ═══════════════════════════════════════════════════════════════
+function seededRand(seed){
+  let s=seed;
+  return function(){s=(s*16807+0)%2147483647;return(s-1)/2147483646};
+}
 
-// Site data (demo)
-const siteData = {
-  all: { impressions:'2.4M', sessions:'86.2K', forms:'1,847', calls:'342', ctr:'4.2%', position:'14.3' },
-  techflow: { impressions:'840K', sessions:'31.2K', forms:'702', calls:'88', ctr:'5.1%', position:'9.4' },
-  greenleaf: { impressions:'620K', sessions:'24.8K', forms:'541', calls:'124', ctr:'3.8%', position:'16.2' },
-  urbanfit: { impressions:'510K', sessions:'19.4K', forms:'351', calls:'76', ctr:'4.4%', position:'14.8' },
-  brightlegal: { impressions:'430K', sessions:'10.8K', forms:'253', calls:'54', ctr:'3.4%', position:'17.1' }
+function genSiteData(domain){
+  const rng=seededRand(domain.split('').reduce((a,c)=>a+c.charCodeAt(0),0));
+  const r=(min,max)=>Math.round(min+rng()*(max-min));
+  const pct=(min,max)=>+(min+rng()*(max-min)).toFixed(1);
+  return{
+    domain,
+    impressions:r(200000,900000),
+    sessions:r(8000,40000),
+    forms:r(100,800),
+    calls:r(20,200),
+    ctr:pct(2,8),
+    position:pct(5,22),
+    users:r(6000,30000),
+    bounceRate:pct(35,60),
+    convRate:pct(1.5,4.5),
+    convs:r(200,2000),
+    answeredRate:pct(65,90),
+    callDuration:`${r(2,7)}m ${r(0,59)}s`,
+    qualLeads:r(20,150),
+    booked:r(10,80),
+    aiRes:pct(55,80),
+    completionRate:pct(60,85),
+    abandonment:pct(15,40),
+    platforms:{gsc:rng()>.2,ga4:rng()>.2,ghl:rng()>.5,wp:rng()>.3},
+    active:rng()>.15,
+  };
+}
+
+function fmtNum(n){
+  if(n>=1000000)return(n/1000000).toFixed(1)+'M';
+  if(n>=1000)return(n/1000).toFixed(1)+'K';
+  return n.toString();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SITE STORE
+// ═══════════════════════════════════════════════════════════════
+const DEFAULT_SITES=[
+  {name:'TechFlow Digital',domain:'techflowdigital.com'},
+  {name:'GreenLeaf Clinic',domain:'greenleafclinic.com'},
+  {name:'Urban Fitness',domain:'urbanfitness.co'},
+  {name:'Bright Legal Group',domain:'brightlegalgroup.com'},
+];
+
+let sites=[];
+let currentDetailSite=null;
+let currentPage=1;
+const SITES_PER_PAGE=24;
+
+function loadSites(){
+  try{
+    const stored=localStorage.getItem('nexus_sites');
+    if(stored){sites=JSON.parse(stored);return;}
+  }catch(e){}
+  sites=DEFAULT_SITES.map(s=>({...s,...genSiteData(s.domain)}));
+  saveSites();
+}
+
+function saveSites(){
+  try{localStorage.setItem('nexus_sites',JSON.stringify(sites));}catch(e){}
+}
+
+function getSiteByDomain(domain){return sites.find(s=>s.domain===domain)}
+
+// ═══════════════════════════════════════════════════════════════
+// CHART REGISTRY
+// ═══════════════════════════════════════════════════════════════
+const chartReg={};
+function mkChart(id,config){
+  if(chartReg[id]){chartReg[id].destroy();delete chartReg[id];}
+  const el=document.getElementById(id);
+  if(!el)return;
+  chartReg[id]=new Chart(el.getContext('2d'),config);
+  return chartReg[id];
+}
+
+const C={
+  BLUE:'#6c8fff',GOLD:'#e8b86d',GREEN:'#3ecf8e',RED:'#ff6b6b',
+  PURPLE:'#a78bfa',TEAL:'#2dd4bf',ORANGE:'#fb923c',GRAY:'#5c6478',
 };
 
-let siteCount = 4;
-
-// ── Navigation ─────────────────────────────────────────────────
-function switchTab(tab) {
-  document.querySelectorAll('.platform-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.platform-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-  const tabEl = document.querySelector(`[data-tab="${tab}"]`);
-  if (tabEl) tabEl.classList.add('active');
-
-  const panel = document.getElementById(`panel-${tab}`);
-  if (panel) panel.classList.add('active');
-
-  currentTab = tab;
-
-  // Scroll to top on mobile
-  window.scrollTo(0, 0);
-}
-
-function setView(v) {
-  switchTab(v);
-}
-
-// ── Site selector ──────────────────────────────────────────────
-function onSiteChange() {
-  const val = document.getElementById('siteSelect').value;
-  const d = siteData[val] || siteData.all;
-  document.getElementById('m-impressions').textContent = d.impressions;
-  document.getElementById('m-sessions').textContent = d.sessions;
-  document.getElementById('m-forms').textContent = d.forms;
-  document.getElementById('m-calls').textContent = d.calls;
-  document.getElementById('m-ctr').textContent = d.ctr;
-  document.getElementById('m-position').textContent = d.position;
-  refreshCharts();
-}
-
-// ── Chart helpers ──────────────────────────────────────────────
-function destroyChart(id) {
-  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
-}
-
-function makeDays(n) {
-  const days = [];
-  for (let i = n - 1; i >= 0; i--) {
-    const d = new Date(Date.now() - i * 86400000);
-    days.push(d.toLocaleDateString('en-GB', { day:'numeric', month:'short' }));
+const BASE_OPTS={
+  responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false}},
+  scales:{
+    x:{ticks:{maxTicksLimit:7,font:{size:10},color:'#5c6478'},grid:{display:false}},
+    y:{ticks:{font:{size:10},color:'#5c6478'},grid:{color:'rgba(255,255,255,0.04)'}}
   }
-  return days;
+};
+const DONUT_OPTS={
+  responsive:true,maintainAspectRatio:false,cutout:'66%',
+  plugins:{legend:{display:false}}
+};
+
+function makeDays(n){
+  const d=[];
+  for(let i=n-1;i>=0;i--){
+    const dt=new Date(Date.now()-i*86400000);
+    d.push(dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'}));
+  }
+  return d;
 }
 
-function randArr(len, min, max) {
-  return Array.from({ length: len }, () => Math.round(min + Math.random() * (max - min)));
+function rArr(len,min,max,seed=42){
+  const rng=seededRand(seed+len+min);
+  return Array.from({length:len},()=>Math.round(min+rng()*(max-min)));
 }
 
-// ── Build all charts ───────────────────────────────────────────
-function buildCharts() {
-  buildOverviewCharts();
-  buildGSCCharts();
-  buildGA4Charts();
-  buildGHLCharts();
-  buildWPCharts();
+function setLegend(elId,labels,colors){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  el.innerHTML=labels.map((l,i)=>`<span class="legend-item"><span class="legend-dot" style="background:${colors[i]}"></span>${l}</span>`).join('');
 }
 
-function refreshCharts() {
-  buildCharts();
+// ═══════════════════════════════════════════════════════════════
+// PAGES
+// ═══════════════════════════════════════════════════════════════
+let activePage='dashboard';
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+
+  const pg=document.getElementById('page-'+name);
+  if(pg)pg.classList.add('active');
+
+  document.querySelectorAll(`.nav-btn[onclick="showPage('${name}')"]`).forEach(b=>b.classList.add('active'));
+
+  activePage=name;
+  closeSidebar();
+
+  if(name==='dashboard')buildDashboard();
+  else if(name==='sites'){currentPage=1;renderSites();}
+  else if(name==='gsc')buildGSCGlobal();
+  else if(name==='ga4')buildGA4Global();
+  else if(name==='ghl')buildGHLGlobal();
+  else if(name==='gravity')buildGravityGlobal();
+  else if(name==='presentation')buildPresentation();
 }
 
-function buildOverviewCharts() {
-  destroyChart('overviewTrend');
-  destroyChart('channelChart');
-  destroyChart('conversionChart');
+// ═══════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════
+function buildDashboard(){
+  updateDashboard();
+  buildTrendChart();
+  buildChannelChart();
+  buildConvChart();
+  buildTopPages();
+}
 
-  const days = makeDays(28);
-  const ctx1 = document.getElementById('overviewTrendChart').getContext('2d');
-  charts.overviewTrend = new Chart(ctx1, {
-    type: 'line',
-    data: {
-      labels: days,
-      datasets: [
-        { label: 'Sessions', data: randArr(28,2400,5800), borderColor: '#b8965a', backgroundColor: 'rgba(184,150,90,0.08)', fill: true, tension: 0.4, pointRadius: 2, borderWidth: 2 },
-        { label: 'Impressions ÷100', data: randArr(28,500,1200), borderColor: '#4f8ef7', backgroundColor: 'rgba(79,142,247,0.05)', fill: false, tension: 0.4, pointRadius: 2, borderWidth: 1.5, borderDash: [4,3] }
-      ]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 7, font: { size: 10 } }, grid: { display: false } }, y: { ticks: { font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } } } }
+function updateDashboard(){
+  const filter=document.getElementById('dashSiteFilter').value;
+  const sub=document.getElementById('dash-sub');
+  const range=document.getElementById('dateRange').value;
+
+  let totals={impressions:0,sessions:0,forms:0,calls:0,ctr:0,position:0,convs:0};
+  let count=0;
+
+  const list=filter==='all'?sites:sites.filter(s=>s.domain===filter);
+  list.forEach(s=>{
+    totals.impressions+=s.impressions;
+    totals.sessions+=s.sessions;
+    totals.forms+=s.forms;
+    totals.calls+=s.calls;
+    totals.ctr+=s.ctr;
+    totals.position+=s.position;
+    totals.convs+=s.convs||0;
+    count++;
   });
 
-  const ctx2 = document.getElementById('channelChart').getContext('2d');
-  charts.channelChart = new Chart(ctx2, {
-    type: 'doughnut',
-    data: {
-      labels: ['Organic', 'Direct', 'Referral', 'Social', 'Paid'],
-      datasets: [{ data: [48, 22, 16, 9, 5], backgroundColor: ['#4f8ef7','#b8965a','#34d399','#e56b6b','#8b6fd4'], borderWidth: 0, hoverOffset: 4 }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: false } } }
+  if(count>0){totals.ctr=(totals.ctr/count).toFixed(1);totals.position=(totals.position/count).toFixed(1);}
+
+  sub.textContent=`${count} website${count!==1?'s':''} · Last ${range} days`;
+
+  document.getElementById('dashStats').innerHTML=`
+    <div class="stat-card c-blue"><div class="stat-label">Total Impressions</div><div class="stat-value">${fmtNum(totals.impressions)}</div><span class="stat-change up">↑ 12.3%</span></div>
+    <div class="stat-card c-gold"><div class="stat-label">Organic Sessions</div><div class="stat-value">${fmtNum(totals.sessions)}</div><span class="stat-change up">↑ 8.7%</span></div>
+    <div class="stat-card c-green"><div class="stat-label">Form Submissions</div><div class="stat-value">${fmtNum(totals.forms)}</div><span class="stat-change up">↑ 3.2%</span></div>
+    <div class="stat-card c-purple"><div class="stat-label">Voice AI Calls</div><div class="stat-value">${fmtNum(totals.calls)}</div><span class="stat-change down">↓ 2.1%</span></div>
+    <div class="stat-card c-teal"><div class="stat-label">Avg. CTR</div><div class="stat-value">${totals.ctr}%</div><span class="stat-change up">↑ 0.4%</span></div>
+    <div class="stat-card c-orange"><div class="stat-label">Avg. Position</div><div class="stat-value">${totals.position}</div><span class="stat-change up">↑ 1.2</span></div>
+  `;
+}
+
+function buildTrendChart(){
+  const days=makeDays(28);
+  mkChart('trendChart',{type:'line',data:{labels:days,datasets:[
+    {label:'Sessions',data:rArr(28,2000,6000,1),borderColor:C.GOLD,backgroundColor:'rgba(232,184,109,0.08)',fill:true,tension:.4,pointRadius:2,borderWidth:2},
+    {label:'Imp÷200',data:rArr(28,400,1200,2),borderColor:C.BLUE,fill:false,tension:.4,pointRadius:1,borderWidth:1.5,borderDash:[4,3]}
+  ]},options:BASE_OPTS});
+}
+
+function buildChannelChart(){
+  const labels=['Organic','Direct','Referral','Social','Paid'];
+  const colors=[C.BLUE,C.GOLD,C.GREEN,C.RED,C.PURPLE];
+  setLegend('channelLegend',labels.map((l,i)=>`${l} ${[48,22,16,9,5][i]}%`),colors);
+  mkChart('channelChart',{type:'doughnut',data:{labels,datasets:[{data:[48,22,16,9,5],backgroundColor:colors,borderWidth:0,hoverOffset:4}]},options:DONUT_OPTS});
+}
+
+function buildConvChart(){
+  mkChart('convChart',{type:'bar',data:{labels:['W1','W2','W3','W4'],datasets:[
+    {label:'Forms',data:rArr(4,350,550,10),backgroundColor:C.PURPLE,borderRadius:4},
+    {label:'Calls',data:rArr(4,60,120,20),backgroundColor:C.GREEN,borderRadius:4}
+  ]},options:{...BASE_OPTS,plugins:{legend:{display:false}}}});
+}
+
+function buildTopPages(){
+  const pages=[
+    {page:'/services/digital-marketing',site:'techflowdigital.com',sessions:'4,821',impr:'38,400',ctr:'6.8',pos:'4.2',status:'green'},
+    {page:'/blog/seo-guide-2025',site:'techflowdigital.com',sessions:'3,102',impr:'24,100',ctr:'5.1',pos:'7.8',status:'green'},
+    {page:'/treatments/physiotherapy',site:'greenleafclinic.com',sessions:'2,887',impr:'19,900',ctr:'3.2',pos:'11.4',status:'amber'},
+    {page:'/membership',site:'urbanfitness.co',sessions:'2,214',impr:'17,200',ctr:'2.9',pos:'13.7',status:'amber'},
+    {page:'/contact',site:'brightlegalgroup.com',sessions:'1,876',impr:'9,800',ctr:'4.4',pos:'9.1',status:'green'},
+  ];
+  document.getElementById('topPagesTable').innerHTML=pages.map(p=>`
+    <tr>
+      <td><div class="td-main">${p.page}</div><div class="td-muted">${p.site}</div></td>
+      <td>${p.sessions}</td><td>${p.impr}</td>
+      <td><span class="badge badge-${p.status}">${p.ctr}%</span></td>
+      <td>${p.pos}</td>
+      <td><span class="badge badge-green">Live</span></td>
+    </tr>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ALL SITES
+// ═══════════════════════════════════════════════════════════════
+let filteredSites=[];
+
+function filterSites(){
+  const q=(document.getElementById('siteFilter').value||'').toLowerCase();
+  const status=document.getElementById('statusFilter').value;
+  const sort=document.getElementById('sortFilter').value;
+
+  filteredSites=sites.filter(s=>{
+    const matchQ=!q||s.domain.toLowerCase().includes(q)||s.name.toLowerCase().includes(q);
+    const matchStatus=status==='all'||(status==='active'&&s.active)||(status==='inactive'&&!s.active);
+    return matchQ&&matchStatus;
   });
 
-  const ctx3 = document.getElementById('conversionChart').getContext('2d');
-  charts.conversionChart = new Chart(ctx3, {
-    type: 'bar',
-    data: {
-      labels: ['W1', 'W2', 'W3', 'W4'],
-      datasets: [
-        { label: 'Form Subs', data: randArr(4, 380, 520), backgroundColor: '#8b6fd4', borderRadius: 4 },
-        { label: 'Voice Calls', data: randArr(4, 60, 110), backgroundColor: '#34d399', borderRadius: 4 }
-      ]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 11 } } }, y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 10 } } } } }
+  if(sort==='sessions')filteredSites.sort((a,b)=>b.sessions-a.sessions);
+  else if(sort==='impressions')filteredSites.sort((a,b)=>b.impressions-a.impressions);
+  else filteredSites.sort((a,b)=>a.name.localeCompare(b.name));
+
+  currentPage=1;
+  renderSitesPage();
+}
+
+function renderSites(){
+  filteredSites=[...sites].sort((a,b)=>a.name.localeCompare(b.name));
+  renderSitesPage();
+}
+
+function renderSitesPage(){
+  const total=filteredSites.length;
+  const pages=Math.ceil(total/SITES_PER_PAGE);
+  const start=(currentPage-1)*SITES_PER_PAGE;
+  const slice=filteredSites.slice(start,start+SITES_PER_PAGE);
+
+  document.getElementById('sitesCount').textContent=`${total} website${total!==1?'s':''} · showing ${start+1}–${Math.min(start+SITES_PER_PAGE,total)}`;
+  document.getElementById('sitesShownInfo').textContent=`${total} results`;
+
+  document.getElementById('sitesGrid').innerHTML=slice.map(s=>siteCardHTML(s)).join('');
+  renderPagination(pages);
+}
+
+function siteCardHTML(s){
+  const initials=s.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  const plats=[
+    s.platforms?.gsc?'<span class="plat-badge plat-gsc">GSC</span>':'',
+    s.platforms?.ga4?'<span class="plat-badge plat-ga4">GA4</span>':'',
+    s.platforms?.ghl?'<span class="plat-badge plat-ghl">GHL</span>':'',
+    s.platforms?.wp?'<span class="plat-badge plat-wp">WP</span>':'',
+  ].join('');
+  return`<div class="site-card" onclick="viewSite('${s.domain}')">
+    <div class="site-card-top">
+      <div class="site-favicon">${initials}</div>
+      <div style="min-width:0">
+        <div class="site-name">${s.name}</div>
+        <div class="site-domain">${s.domain}</div>
+      </div>
+      <div class="site-status">
+        <span class="${s.active?'dot-on':'dot-off'}"></span>
+        <span style="color:${s.active?'var(--green)':'var(--text3)'}">${s.active?'Live':'Offline'}</span>
+      </div>
+    </div>
+    <div class="site-stats">
+      <div class="site-stat"><div class="site-stat-label">Impressions</div><div class="site-stat-val">${fmtNum(s.impressions)}</div></div>
+      <div class="site-stat"><div class="site-stat-label">Sessions</div><div class="site-stat-val">${fmtNum(s.sessions)}</div></div>
+      <div class="site-stat"><div class="site-stat-label">CTR</div><div class="site-stat-val">${s.ctr}%</div></div>
+      <div class="site-stat"><div class="site-stat-label">Position</div><div class="site-stat-val">${s.position}</div></div>
+    </div>
+    <div class="site-card-footer">
+      <div class="site-platforms">${plats}</div>
+      <span class="site-view-btn">View Analytics →</span>
+    </div>
+  </div>`;
+}
+
+function renderPagination(pages){
+  const pg=document.getElementById('sitesPagination');
+  if(pages<=1){pg.innerHTML='';return;}
+  let html='';
+  const maxBtns=7;
+  let start=Math.max(1,currentPage-3);
+  let end=Math.min(pages,start+maxBtns-1);
+  if(end-start<maxBtns-1)start=Math.max(1,end-maxBtns+1);
+
+  html+=`<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  if(start>1)html+=`<button class="page-btn" onclick="goPage(1)">1</button>${start>2?'<span class="page-info">…</span>':''}`;
+  for(let i=start;i<=end;i++){
+    html+=`<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  if(end<pages)html+=`${end<pages-1?'<span class="page-info">…</span>':''}<button class="page-btn" onclick="goPage(${pages})">${pages}</button>`;
+  html+=`<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}>›</button>`;
+  html+=`<span class="page-info">${currentPage}/${pages}</span>`;
+  pg.innerHTML=html;
+}
+
+function goPage(n){
+  const pages=Math.ceil(filteredSites.length/SITES_PER_PAGE);
+  if(n<1||n>pages)return;
+  currentPage=n;
+  renderSitesPage();
+  document.getElementById('page-sites').scrollTop=0;
+  window.scrollTo(0,0);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SITE DETAIL
+// ═══════════════════════════════════════════════════════════════
+function viewSite(domain){
+  currentDetailSite=getSiteByDomain(domain);
+  if(!currentDetailSite)return;
+  document.getElementById('detailSiteName').textContent=currentDetailSite.name;
+  document.getElementById('detailSiteDomain').textContent=currentDetailSite.domain;
+  switchDetailTab('overview');
+
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-site-detail').classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  activePage='site-detail';
+  closeSidebar();
+}
+
+function switchDetailTab(tab){
+  document.querySelectorAll('[data-dtab]').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`[data-dtab="${tab}"]`).classList.add('active');
+  document.querySelectorAll('.detail-tab-panel').forEach(p=>p.style.display='none');
+  document.getElementById(`detail-tab-${tab}`).style.display='block';
+
+  const s=currentDetailSite;if(!s)return;
+  if(tab==='overview')buildDetailOverview(s);
+  else if(tab==='gsc')buildDetailGSC(s);
+  else if(tab==='ga4')buildDetailGA4(s);
+  else if(tab==='ghl')buildDetailGHL(s);
+  else if(tab==='forms')buildDetailForms(s);
+}
+
+function buildDetailOverview(s){
+  document.getElementById('detailStats').innerHTML=`
+    <div class="stat-card c-blue"><div class="stat-label">Impressions</div><div class="stat-value">${fmtNum(s.impressions)}</div><span class="stat-change up">↑ 11%</span></div>
+    <div class="stat-card c-gold"><div class="stat-label">Sessions</div><div class="stat-value">${fmtNum(s.sessions)}</div><span class="stat-change up">↑ 8%</span></div>
+    <div class="stat-card c-green"><div class="stat-label">CTR</div><div class="stat-value">${s.ctr}%</div><span class="stat-change up">↑ 0.3%</span></div>
+    <div class="stat-card c-purple"><div class="stat-label">Avg. Position</div><div class="stat-value">${s.position}</div><span class="stat-change up">↑ 1.4</span></div>
+    <div class="stat-card c-teal"><div class="stat-label">Form Submissions</div><div class="stat-value">${fmtNum(s.forms)}</div><span class="stat-change up">↑ 3%</span></div>
+    <div class="stat-card c-orange"><div class="stat-label">Voice Calls</div><div class="stat-value">${s.calls}</div><span class="stat-change down">↓ 2%</span></div>
+  `;
+  const seed=s.domain.length;
+  mkChart('detailTrendChart',{type:'line',data:{labels:makeDays(28),datasets:[
+    {label:'Sessions',data:rArr(28,s.sessions*.05,s.sessions*.12,seed),borderColor:C.GOLD,backgroundColor:'rgba(232,184,109,0.08)',fill:true,tension:.4,pointRadius:1,borderWidth:2}
+  ]},options:BASE_OPTS});
+}
+
+function buildDetailGSC(s){
+  document.getElementById('gscStats').innerHTML=`
+    <div class="stat-card c-blue"><div class="stat-label">Impressions</div><div class="stat-value">${fmtNum(s.impressions)}</div><span class="stat-change up">↑ 14%</span></div>
+    <div class="stat-card c-gold"><div class="stat-label">Clicks</div><div class="stat-value">${fmtNum(Math.round(s.impressions*s.ctr/100))}</div><span class="stat-change up">↑ 10%</span></div>
+    <div class="stat-card c-green"><div class="stat-label">CTR</div><div class="stat-value">${s.ctr}%</div><span class="stat-change up">↑ 0.3%</span></div>
+    <div class="stat-card c-purple"><div class="stat-label">Avg. Position</div><div class="stat-value">${s.position}</div><span class="stat-change up">↑ 1.8</span></div>
+  `;
+  const seed=s.domain.length*3;
+  mkChart('gscChart1',{type:'line',data:{labels:makeDays(28),datasets:[
+    {label:'Impressions÷50',data:rArr(28,s.impressions*.01/50,s.impressions*.04/50,seed),borderColor:C.BLUE,fill:false,tension:.4,pointRadius:1,borderWidth:2},
+    {label:'Clicks',data:rArr(28,100,800,seed+1),borderColor:C.GOLD,fill:false,tension:.4,pointRadius:1,borderWidth:1.5,borderDash:[4,3]}
+  ]},options:BASE_OPTS});
+  mkChart('gscChart2',{type:'bar',data:{labels:['1–3','4–10','11–20','21–50','50+'],datasets:[{data:rArr(5,20,400,seed+2),backgroundColor:[C.GREEN,C.BLUE,C.GOLD,C.RED,C.GRAY],borderRadius:4}]},options:BASE_OPTS});
+  const queries=['best '+s.domain.split('.')[0]+' services','near me','contact us','pricing','reviews','how to','free consultation'];
+  document.getElementById('gscQueriesTable').innerHTML=queries.slice(0,6).map((q,i)=>{
+    const clicks=rArr(1,80,1200,seed+i*10)[0];
+    const impr=clicks*rArr(1,5,20,seed+i*11)[0];
+    const ctr=(clicks/impr*100).toFixed(1);
+    const pos=(3+i*2.1).toFixed(1);
+    return`<tr><td class="td-main">${q}</td><td>${clicks.toLocaleString()}</td><td>${impr.toLocaleString()}</td><td><span class="badge badge-${ctr>4?'green':'amber'}">${ctr}%</span></td><td>${pos}</td></tr>`;
+  }).join('');
+}
+
+function buildDetailGA4(s){
+  document.getElementById('ga4Stats').innerHTML=`
+    <div class="stat-card c-gold"><div class="stat-label">Sessions</div><div class="stat-value">${fmtNum(s.sessions)}</div><span class="stat-change up">↑ 8.7%</span></div>
+    <div class="stat-card c-teal"><div class="stat-label">Users</div><div class="stat-value">${fmtNum(s.users)}</div><span class="stat-change up">↑ 6.1%</span></div>
+    <div class="stat-card c-blue"><div class="stat-label">Bounce Rate</div><div class="stat-value">${s.bounceRate}%</div><span class="stat-change down">↓ 2%</span></div>
+    <div class="stat-card c-green"><div class="stat-label">Conv. Rate</div><div class="stat-value">${s.convRate}%</div><span class="stat-change up">↑ 0.2%</span></div>
+    <div class="stat-card c-purple"><div class="stat-label">Conversions</div><div class="stat-value">${fmtNum(s.convs)}</div><span class="stat-change up">↑ 5%</span></div>
+  `;
+  const seed=s.domain.length*7;
+  mkChart('ga4Chart1',{type:'line',data:{labels:makeDays(28),datasets:[
+    {label:'Sessions',data:rArr(28,s.sessions*.04,s.sessions*.1,seed),borderColor:C.ORANGE,backgroundColor:'rgba(251,146,60,0.08)',fill:true,tension:.4,pointRadius:1,borderWidth:2},
+    {label:'Users',data:rArr(28,s.users*.04,s.users*.1,seed+1),borderColor:C.GOLD,fill:false,tension:.4,pointRadius:1,borderWidth:1.5,borderDash:[4,3]}
+  ]},options:BASE_OPTS});
+  setLegend('deviceLegend',['Mobile 58%','Desktop 35%','Tablet 7%'],[C.BLUE,C.GOLD,C.GREEN]);
+  mkChart('ga4Chart2',{type:'doughnut',data:{labels:['Mobile','Desktop','Tablet'],datasets:[{data:[58,35,7],backgroundColor:[C.BLUE,C.GOLD,C.GREEN],borderWidth:0,hoverOffset:4}]},options:DONUT_OPTS});
+  mkChart('ga4Chart3',{type:'bar',data:{labels:['United States','United Kingdom','Canada','Australia','Germany'],datasets:[{data:rArr(5,1000,20000,seed+3),backgroundColor:C.BLUE,borderRadius:4}]},options:{...BASE_OPTS,indexAxis:'y'}});
+}
+
+function buildDetailGHL(s){
+  document.getElementById('ghlStats').innerHTML=`
+    <div class="stat-card c-green"><div class="stat-label">Total Calls</div><div class="stat-value">${s.calls}</div><span class="stat-change down">↓ 2%</span></div>
+    <div class="stat-card c-gold"><div class="stat-label">Answered Rate</div><div class="stat-value">${s.answeredRate}%</div><span class="stat-change up">↑ 3%</span></div>
+    <div class="stat-card c-blue"><div class="stat-label">Avg. Duration</div><div class="stat-value">${s.callDuration}</div><span class="stat-change up">↑ 22s</span></div>
+    <div class="stat-card c-purple"><div class="stat-label">Qualified Leads</div><div class="stat-value">${s.qualLeads}</div><span class="stat-change up">↑ 8%</span></div>
+    <div class="stat-card c-teal"><div class="stat-label">Booked</div><div class="stat-value">${s.booked}</div><span class="stat-change up">↑ 12%</span></div>
+    <div class="stat-card c-orange"><div class="stat-label">AI Resolution</div><div class="stat-value">${s.aiRes}%</div><span class="stat-change up">↑ 4%</span></div>
+  `;
+  const seed=s.domain.length*5;
+  mkChart('ghlChart1',{type:'bar',data:{labels:makeDays(14),datasets:[
+    {label:'Answered',data:rArr(14,Math.max(1,s.calls*.03),s.calls*.1,seed),backgroundColor:C.GREEN,borderRadius:3,stack:'c'},
+    {label:'Missed',data:rArr(14,1,Math.max(2,s.calls*.03),seed+1),backgroundColor:C.RED,borderRadius:3,stack:'c'}
+  ]},options:{...BASE_OPTS,scales:{x:{stacked:true,...BASE_OPTS.scales.x},y:{stacked:true,...BASE_OPTS.scales.y}}}});
+  setLegend('ghlLegend',['Booked 18%','Qualified 28%','Info 32%','No Answer 22%'],[C.GREEN,C.BLUE,C.GOLD,C.RED]);
+  mkChart('ghlChart2',{type:'doughnut',data:{labels:['Booked','Qualified','Info','No Answer'],datasets:[{data:[18,28,32,22],backgroundColor:[C.GREEN,C.BLUE,C.GOLD,C.RED],borderWidth:0,hoverOffset:4}]},options:DONUT_OPTS});
+
+  const outcomes=['Booked','Qualified','Info Only','No Answer'];
+  const sents=['😊 Positive','😊 Positive','😐 Neutral','— N/A'];
+  const badgeMap={Booked:'badge-green',Qualified:'badge-blue','Info Only':'badge-amber','No Answer':'badge-red'};
+  const now=new Date();
+  document.getElementById('ghlCallsTable').innerHTML=Array.from({length:5},(_,i)=>{
+    const d=new Date(now-(i*86400000*rArr(1,0,2,seed+i)[0]));
+    const out=outcomes[rArr(1,0,3,seed+i*3)[0]];
+    const mins=rArr(1,1,8,seed+i*7)[0];const secs=rArr(1,0,59,seed+i*11)[0];
+    return`<tr><td>${d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</td><td>${mins}m ${secs}s</td><td><span class="badge ${badgeMap[out]}">${out}</span></td><td>${sents[outcomes.indexOf(out)]}</td><td>${out!=='No Answer'?'<span class="badge badge-green">Yes</span>':'<span class="badge badge-gray">N/A</span>'}</td></tr>`;
+  }).join('');
+}
+
+function buildDetailForms(s){
+  document.getElementById('formsStats').innerHTML=`
+    <div class="stat-card c-purple"><div class="stat-label">Submissions</div><div class="stat-value">${fmtNum(s.forms)}</div><span class="stat-change up">↑ 3%</span></div>
+    <div class="stat-card c-gold"><div class="stat-label">Completion Rate</div><div class="stat-value">${s.completionRate}%</div><span class="stat-change up">↑ 1.8%</span></div>
+    <div class="stat-card c-teal"><div class="stat-label">Avg. Time</div><div class="stat-value">1m 52s</div><span class="stat-change down">↓ 8s</span></div>
+    <div class="stat-card c-red"><div class="stat-label">Abandonment</div><div class="stat-value">${s.abandonment}%</div><span class="stat-change flat">→</span></div>
+  `;
+  const seed=s.domain.length*9;
+  const formNames=['Contact Form','Booking Form','Lead Gen','Newsletter','Consultation','Quote Request'];
+  mkChart('formsChart1',{type:'bar',data:{labels:formNames.slice(0,4),datasets:[{data:rArr(4,Math.max(10,s.forms*.05),s.forms*.4,seed),backgroundColor:[C.PURPLE,C.GREEN,C.PURPLE,C.GOLD],borderRadius:4}]},options:{...BASE_OPTS,indexAxis:'y'}});
+  mkChart('formsChart2',{type:'line',data:{labels:makeDays(28),datasets:[{label:'Submissions',data:rArr(28,Math.max(1,s.forms*.01),s.forms*.08,seed+1),borderColor:C.PURPLE,backgroundColor:'rgba(167,139,250,0.08)',fill:true,tension:.4,pointRadius:1,borderWidth:2}]},options:BASE_OPTS});
+  mkChart('formsChart3',{type:'doughnut',data:{labels:['Completed','Abandoned'],datasets:[{data:[s.completionRate,100-s.completionRate],backgroundColor:[C.GREEN,C.GRAY],borderWidth:0}]},options:{...DONUT_OPTS,cutout:'72%'}});
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GLOBAL PLATFORM PAGES
+// ═══════════════════════════════════════════════════════════════
+function buildGSCGlobal(){
+  mkChart('gscGlobalChart',{type:'line',data:{labels:makeDays(28),datasets:[
+    {label:'Imp÷100',data:rArr(28,8000,18000,30),borderColor:C.BLUE,fill:false,tension:.4,pointRadius:1,borderWidth:2},
+    {label:'Clicks',data:rArr(28,2000,6000,31),borderColor:C.GOLD,fill:false,tension:.4,pointRadius:1,borderWidth:1.5,borderDash:[4,3]}
+  ]},options:BASE_OPTS});
+  mkChart('posChart',{type:'bar',data:{labels:['1–3','4–10','11–20','21–50','50+'],datasets:[{data:[168,472,856,1524,768],backgroundColor:[C.GREEN,C.BLUE,C.GOLD,C.RED,C.GRAY],borderRadius:4}]},options:BASE_OPTS});
+  mkChart('ctrSiteChart',{type:'bar',data:{labels:sites.slice(0,8).map(s=>s.domain.split('.')[0]),datasets:[{data:sites.slice(0,8).map(s=>s.ctr),backgroundColor:C.BLUE,borderRadius:4}]},options:{...BASE_OPTS,scales:{...BASE_OPTS.scales,y:{...BASE_OPTS.scales.y,max:10}}}});
+}
+
+function buildGA4Global(){
+  mkChart('ga4GlobalChart',{type:'line',data:{labels:makeDays(28),datasets:[
+    {label:'Sessions',data:rArr(28,4000,12000,40),borderColor:C.ORANGE,backgroundColor:'rgba(251,146,60,0.08)',fill:true,tension:.4,pointRadius:1,borderWidth:2},
+    {label:'Users',data:rArr(28,3000,9000,41),borderColor:C.GOLD,fill:false,tension:.4,pointRadius:1,borderWidth:1.5,borderDash:[4,3]}
+  ]},options:BASE_OPTS});
+  setLegend('deviceLegend2',['Mobile 58%','Desktop 35%','Tablet 7%'],[C.BLUE,C.GOLD,C.GREEN]);
+  mkChart('deviceChart2',{type:'doughnut',data:{labels:['Mobile','Desktop','Tablet'],datasets:[{data:[58,35,7],backgroundColor:[C.BLUE,C.GOLD,C.GREEN],borderWidth:0,hoverOffset:4}]},options:DONUT_OPTS});
+  mkChart('countryChart2',{type:'bar',data:{labels:['United States','United Kingdom','Canada','Australia','Germany'],datasets:[{data:[76800,38400,23600,16800,10200],backgroundColor:C.BLUE,borderRadius:4}]},options:{...BASE_OPTS,indexAxis:'y'}});
+}
+
+function buildGHLGlobal(){
+  mkChart('ghlGlobalChart',{type:'bar',data:{labels:makeDays(14),datasets:[
+    {label:'Answered',data:rArr(14,24,64,50),backgroundColor:C.GREEN,borderRadius:3,stack:'c'},
+    {label:'Missed',data:rArr(14,8,24,51),backgroundColor:C.RED,borderRadius:3,stack:'c'}
+  ]},options:{...BASE_OPTS,scales:{x:{stacked:true,...BASE_OPTS.scales.x},y:{stacked:true,...BASE_OPTS.scales.y}}}});
+  setLegend('ghlGlobalLegend',['Booked','Qualified','Info','No Answer'],[C.GREEN,C.BLUE,C.GOLD,C.RED]);
+  mkChart('ghlOutcomeChart',{type:'doughnut',data:{labels:['Booked','Qualified','Info','No Answer'],datasets:[{data:[18,28,32,22],backgroundColor:[C.GREEN,C.BLUE,C.GOLD,C.RED],borderWidth:0,hoverOffset:4}]},options:DONUT_OPTS});
+  mkChart('ghlSiteChart',{type:'bar',data:{labels:sites.slice(0,6).map(s=>s.domain.split('.')[0]),datasets:[{data:sites.slice(0,6).map(s=>s.calls),backgroundColor:C.GREEN,borderRadius:4}]},options:BASE_OPTS});
+}
+
+function buildGravityGlobal(){
+  const formNames=['Contact','Booking','Lead Gen','Membership','Consultation','Newsletter','Quote','Feedback'];
+  setLegend('gravSiteLegend',['techflow 38%','greenleaf 29%','urbanfit 19%','brightlegal 14%'],[C.PURPLE,C.GREEN,C.GOLD,C.BLUE]);
+  mkChart('gravityFormsChart',{type:'bar',data:{labels:formNames,datasets:[{data:rArr(8,80,500,60),backgroundColor:[C.PURPLE,C.GREEN,C.PURPLE,C.GOLD,C.BLUE,C.PURPLE,C.TEAL,C.ORANGE],borderRadius:4}]},options:{...BASE_OPTS,indexAxis:'y'}});
+  mkChart('gravityTrendChart',{type:'line',data:{labels:makeDays(28),datasets:[{label:'Submissions',data:rArr(28,60,240,61),borderColor:C.PURPLE,backgroundColor:'rgba(167,139,250,0.08)',fill:true,tension:.4,pointRadius:1,borderWidth:2}]},options:BASE_OPTS});
+  mkChart('gravitySiteChart',{type:'doughnut',data:{labels:['techflow','greenleaf','urbanfit','brightlegal'],datasets:[{data:[38,29,19,14],backgroundColor:[C.PURPLE,C.GREEN,C.GOLD,C.BLUE],borderWidth:0,hoverOffset:4}]},options:DONUT_OPTS});
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PRESENTATION BUILDER
+// ═══════════════════════════════════════════════════════════════
+let slides=[];
+let currentSlide=0;
+let presData=null;
+
+function buildPresentation(){
+  const sel=document.getElementById('presSiteSelect').value;
+  presData=sel==='all'?null:getSiteByDomain(sel);
+
+  slides=[
+    {type:'cover',title:'Analytics Report',sub:presData?presData.domain:'All Websites'},
+    {type:'overview',title:'Performance Overview'},
+    {type:'gsc',title:'Search Console'},
+    {type:'ga4',title:'GA4 Analytics'},
+    {type:'conversions',title:'Conversions & Leads'},
+  ];
+  currentSlide=0;
+  renderSlidesList();
+  renderSlide(0);
+}
+
+function renderSlidesList(){
+  const list=document.getElementById('slidesList');
+  list.innerHTML=slides.map((s,i)=>`
+    <div class="pres-slide-thumb ${i===currentSlide?'active':''}" onclick="renderSlide(${i})">
+      <div>
+        <div class="thumb-title">${i+1}. ${s.title}</div>
+        <div class="thumb-sub">${s.sub||presData?.domain||'All Sites'}</div>
+      </div>
+      <div class="thumb-bars">
+        ${Array.from({length:6},(_,j)=>`<div class="thumb-bar" style="height:${20+Math.random()*80}%"></div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function renderSlide(idx){
+  currentSlide=idx;
+  renderSlidesList();
+  document.getElementById('slideCounter').textContent=`${idx+1} / ${slides.length}`;
+  const s=slides[idx];
+  const d=presData||{name:'All Websites',domain:'all sites combined',impressions:2400000,sessions:172000,forms:3694,calls:684,ctr:'4.1',position:'14.3',users:128000,convs:4380};
+  const frame=document.getElementById('presFrame');
+
+  const slideTemplates={
+    cover:`<div class="slide-content" style="justify-content:center;align-items:center;text-align:center">
+      <div style="font-family:'Syne',sans-serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:16px">NEXUS Analytics Platform</div>
+      <div class="slide-title" style="font-size:36px;margin-bottom:8px">${s.title}</div>
+      <div class="slide-domain">${s.sub||d.domain}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:24px">${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
+    </div>`,
+
+    overview:`<div class="slide-content">
+      <div class="slide-title">${s.title}</div>
+      <div class="slide-domain">${d.domain} · Last 28 days</div>
+      <div class="slide-metrics">
+        <div class="slide-metric"><div class="slide-metric-label">Impressions</div><div class="slide-metric-val" style="color:#6c8fff">${fmtNum(d.impressions)}</div></div>
+        <div class="slide-metric"><div class="slide-metric-label">Sessions</div><div class="slide-metric-val" style="color:#e8b86d">${fmtNum(d.sessions)}</div></div>
+        <div class="slide-metric"><div class="slide-metric-label">Users</div><div class="slide-metric-val" style="color:#3ecf8e">${fmtNum(d.users||Math.round(d.sessions*.75))}</div></div>
+        <div class="slide-metric"><div class="slide-metric-label">CTR</div><div class="slide-metric-val" style="color:#a78bfa">${d.ctr}%</div></div>
+        <div class="slide-metric"><div class="slide-metric-label">Avg. Position</div><div class="slide-metric-val" style="color:#2dd4bf">${d.position}</div></div>
+        <div class="slide-metric"><div class="slide-metric-label">Conversions</div><div class="slide-metric-val" style="color:#fb923c">${fmtNum(d.convs||d.forms)}</div></div>
+      </div>
+    </div>`,
+
+    gsc:`<div class="slide-content">
+      <div class="slide-title">${s.title}</div>
+      <div class="slide-domain">${d.domain}</div>
+      <div class="slide-metrics">
+        <div class="slide-metric"><div class="slide-metric-label">Impressions</div><div class="slide-metric-val" style="color:#6c8fff">${fmtNum(d.impressions)}</div></div>
+        <div class="slide-metric"><div class="slide-metric-label">Clicks</div><div class="slide-metric-val" style="color:#e8b86d">${fmtNum(Math.round(d.impressions*d.ctr/100))}</div></div>
+        <div class="slide-metric"><div class="slide-metric-label">CTR</div><div class="slide-metric-val" style="color:#3ecf8e">${d.ctr}%</div></div>
+      </div>
+      <div style="margin-top:auto;font-size:11px;color:rgba(255,255,255,0.3)">Powered by Google Search Console</div>
+    </div>`,
+
+    ga4:`<div class="slide-content">
+      <div class="slide-title">${s.title}</div>
+      <div class="slide-domain">${d.domain}</div>
+      <div class="slide-metrics">
+        <div class="slide-metric"><div class="slide-metric-label">Sessions</div><div class="slide-metric-val" style="color:#fb923c">${fmtNum(d.sessions)}</div></div>
+        <div class="slide-metric"><div class="slide-metric-label">Users</div><div class="slide-metric-val" style="color:#e8b86d">${fmtNum(d.users||Math.round(d.sessions*.75))}</div></div>
+        <div class="slide-metric"><div class="slide-metric-label">Conv. Rate</div><div class="slide-metric-val" style="color:#3ecf8e">${d.convRate||2.54}%</div></div>
+      </div>
+      <div style="margin-top:auto;font-size:11px;color:rgba(255,255,255,0.3)">Powered by Google Analytics 4</div>
+    </div>`,
+
+    conversions:`<div class="slide-content">
+      <div class="slide-title">${s.title}</div>
+      <div class="slide-domain">${d.domain}</div>
+      <div class="slide-metrics">
+        <div class="slide-metric"><div class="slide-metric-label">Form Submissions</div><div class="slide-metric-val" style="color:#a78bfa">${fmtNum(d.forms)}</div></div>
+        <div class="slide-metric"><div class="slide-metric-label">Voice AI Calls</div><div class="slide-metric-val" style="color:#3ecf8e">${d.calls}</div></div>
+        <div class="slide-metric"><div class="slide-metric-label">Qualified Leads</div><div class="slide-metric-val" style="color:#e8b86d">${d.qualLeads||Math.round(d.calls*.27)}</div></div>
+      </div>
+      <div style="margin-top:auto;font-size:11px;color:rgba(255,255,255,0.3)">GHL Voice AI + Gravity Forms</div>
+    </div>`,
+  };
+
+  frame.innerHTML=slideTemplates[s.type]||slideTemplates.overview;
+}
+
+function prevSlide(){if(currentSlide>0)renderSlide(currentSlide-1);}
+function nextSlide(){if(currentSlide<slides.length-1)renderSlide(currentSlide+1);}
+
+function addSlide(){
+  const types=['overview','gsc','ga4','conversions'];
+  const names=['Overview','Search Console','GA4 Analytics','Conversions'];
+  const idx=slides.length%types.length;
+  slides.push({type:types[idx],title:names[idx]+' ('+slides.length+')'});
+  currentSlide=slides.length-1;
+  renderSlidesList();
+  renderSlide(currentSlide);
+}
+
+function fullscreenPres(){
+  const frame=document.getElementById('presFrame');
+  if(frame.requestFullscreen)frame.requestFullscreen();
+  else if(frame.webkitRequestFullscreen)frame.webkitRequestFullscreen();
+}
+
+function openPresentForSite(){
+  if(currentDetailSite){
+    const sel=document.getElementById('presSiteSelect');
+    // ensure option exists
+    let found=false;
+    for(let o of sel.options)if(o.value===currentDetailSite.domain){found=true;break;}
+    if(!found){const o=document.createElement('option');o.value=currentDetailSite.domain;o.textContent=currentDetailSite.domain;sel.appendChild(o);}
+    sel.value=currentDetailSite.domain;
+  }
+  showPage('presentation');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SITE MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+function openAddSite(){document.getElementById('addSiteOverlay').classList.add('open')}
+function openConnectModal(name){document.getElementById('connectTitle').textContent='Connect '+name;document.getElementById('connectOverlay').classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+function addSite(){
+  const name=document.getElementById('newName').value.trim();
+  const domain=document.getElementById('newDomain').value.trim();
+  if(!domain){showToast('Please enter a domain','error');return;}
+
+  const existing=sites.find(s=>s.domain===domain);
+  if(existing){showToast('Domain already exists','error');return;}
+
+  const newSite={
+    name:name||domain,
+    domain,
+    gscProp:document.getElementById('gscProp').value.trim(),
+    ga4Id:document.getElementById('ga4Id').value.trim(),
+    ghlId:document.getElementById('ghlId').value.trim(),
+    wpUrl:document.getElementById('wpUrl').value.trim(),
+    ...genSiteData(domain),
+    platforms:{
+      gsc:!!document.getElementById('gscProp').value.trim(),
+      ga4:!!document.getElementById('ga4Id').value.trim(),
+      ghl:!!document.getElementById('ghlId').value.trim(),
+      wp:!!document.getElementById('wpUrl').value.trim(),
+    }
+  };
+  newSite.name=name||domain;
+
+  sites.push(newSite);
+  saveSites();
+  updateSiteDropdowns();
+
+  closeModal('addSiteOverlay');
+  showToast('✓ Website added successfully');
+
+  // Clear form
+  ['newName','newDomain','gscProp','ga4Id','ghlId','wpUrl'].forEach(id=>{document.getElementById(id).value='';});
+
+  if(activePage==='sites'){currentPage=1;filterSites();}
+}
+
+function updateSiteDropdowns(){
+  const count=sites.length;
+  document.getElementById('siteCountBadge').textContent=count;
+
+  ['dashSiteFilter','presSiteSelect'].forEach(id=>{
+    const sel=document.getElementById(id);
+    // Remove non-"all" options
+    while(sel.options.length>1)sel.remove(1);
+    sites.forEach(s=>{const o=document.createElement('option');o.value=s.domain;o.textContent=s.name||s.domain;sel.appendChild(o);});
   });
 }
 
-function buildGSCCharts() {
-  destroyChart('gscTrend');
-  destroyChart('positionChart');
+// ═══════════════════════════════════════════════════════════════
+// PDF EXPORT
+// ═══════════════════════════════════════════════════════════════
+function exportPDF(){
+  const site=activePage==='site-detail'&&currentDetailSite?currentDetailSite:null;
+  const name=site?site.domain:'All Sites';
+  showToast('Generating PDF report…','loading');
 
-  const days = makeDays(28);
-  const ctx1 = document.getElementById('gscTrendChart').getContext('2d');
-  charts.gscTrend = new Chart(ctx1, {
-    type: 'line',
-    data: {
-      labels: days,
-      datasets: [
-        { label: 'Impressions ÷100', data: randArr(28, 300, 800), borderColor: '#4f8ef7', fill: false, tension: 0.4, pointRadius: 1, borderWidth: 2 },
-        { label: 'Clicks', data: randArr(28, 1200, 3200), borderColor: '#b8965a', fill: false, tension: 0.4, pointRadius: 1, borderWidth: 2, borderDash: [5,3] }
-      ]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 7, font: { size: 10 } }, grid: { display: false } }, y: { ticks: { font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } } } }
-  });
+  setTimeout(()=>{
+    try{
+      const {jsPDF}=window.jspdf;
+      const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+      const d=site||{name:'All Sites',domain:'All Sites Combined',impressions:2400000,sessions:172000,forms:3694,calls:684,ctr:'4.1',position:'14.3'};
 
-  const ctx2 = document.getElementById('positionChart').getContext('2d');
-  charts.positionChart = new Chart(ctx2, {
-    type: 'bar',
-    data: {
-      labels: ['1–3', '4–10', '11–20', '21–50', '50+'],
-      datasets: [{ label: 'Queries', data: [42, 118, 214, 381, 192], backgroundColor: ['#34d399','#4f8ef7','#b8965a','#e56b6b','#9098a8'], borderRadius: 4 }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 11 } } }, y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 10 } } } } }
-  });
+      // Background
+      doc.setFillColor(10,11,14);
+      doc.rect(0,0,297,210,'F');
+
+      // Header bar
+      doc.setFillColor(17,19,24);
+      doc.rect(0,0,297,28,'F');
+
+      // Logo text
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(20);doc.setFont('helvetica','bold');
+      doc.text('NEXUS',14,18);
+      doc.setFontSize(8);doc.setFont('helvetica','normal');
+      doc.setTextColor(92,100,120);
+      doc.text('Analytics Platform',40,18);
+
+      // Report title
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(13);doc.setFont('helvetica','bold');
+      doc.text(`Analytics Report — ${d.name||d.domain}`,14,38);
+      doc.setFontSize(8);doc.setFont('helvetica','normal');
+      doc.setTextColor(92,100,120);
+      doc.text(`Generated ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})} · Last 28 days`,14,45);
+
+      // Divider
+      doc.setDrawColor(31,34,43);
+      doc.line(14,50,283,50);
+
+      // Stat boxes
+      const stats=[
+        {label:'IMPRESSIONS',value:fmtNum(d.impressions),color:[108,143,255]},
+        {label:'SESSIONS',value:fmtNum(d.sessions),color:[232,184,109]},
+        {label:'FORM SUBMISSIONS',value:fmtNum(d.forms),color:[167,139,250]},
+        {label:'VOICE CALLS',value:String(d.calls),color:[62,207,142]},
+        {label:'AVG. CTR',value:d.ctr+'%',color:[45,212,191]},
+        {label:'AVG. POSITION',value:String(d.position),color:[251,146,60]},
+      ];
+      stats.forEach((st,i)=>{
+        const x=14+(i%3)*91;const y=i<3?58:100;
+        doc.setFillColor(24,27,34);
+        doc.roundedRect(x,y,86,30,2,2,'F');
+        doc.setFillColor(...st.color);
+        doc.rect(x,y,86,2,'F');
+        doc.setTextColor(92,100,120);doc.setFontSize(7);doc.setFont('helvetica','bold');
+        doc.text(st.label,x+6,y+12);
+        doc.setTextColor(...st.color);doc.setFontSize(20);doc.setFont('helvetica','bold');
+        doc.text(st.value,x+6,y+25);
+      });
+
+      // Platform table
+      doc.setTextColor(255,255,255);doc.setFontSize(10);doc.setFont('helvetica','bold');
+      doc.text('Platform Connections',14,148);
+      doc.setDrawColor(31,34,43);doc.line(14,152,283,152);
+
+      const platData=[
+        ['Google Search Console','Connected','4 properties','2 hrs ago'],
+        ['Google Analytics 4','Connected','4 properties','1 hr ago'],
+        ['GHL Voice AI','Connected','API active','30 min ago'],
+        ['WordPress Gravity Forms','Connected','12 forms','45 min ago'],
+      ];
+      const headers=['Platform','Status','Properties','Last Sync'];
+      const colX=[14,100,160,220];
+      doc.setTextColor(92,100,120);doc.setFontSize(7);doc.setFont('helvetica','bold');
+      headers.forEach((h,i)=>doc.text(h,colX[i],158));
+      platData.forEach((row,ri)=>{
+        const y=165+ri*9;
+        if(ri%2===0){doc.setFillColor(17,19,24);doc.rect(14,y-5,269,9,'F');}
+        doc.setTextColor(200,204,214);doc.setFontSize(8);doc.setFont('helvetica','normal');
+        row.forEach((cell,ci)=>{
+          if(ci===1){doc.setTextColor(62,207,142);}
+          else{doc.setTextColor(200,204,214);}
+          doc.text(cell,colX[ci],y);
+        });
+      });
+
+      // Footer
+      doc.setFillColor(17,19,24);doc.rect(0,200,297,10,'F');
+      doc.setTextColor(92,100,120);doc.setFontSize(7);
+      doc.text('NEXUS Analytics Platform · Confidential Report · nexus.app',14,207);
+      doc.text(`Page 1 of 1`,260,207);
+
+      doc.save(`nexus-report-${(d.domain||'all-sites').replace(/[^a-z0-9]/gi,'-')}-${Date.now()}.pdf`);
+      showToast('✓ PDF downloaded','success');
+    }catch(e){
+      console.error(e);
+      showToast('PDF generation failed','error');
+    }
+  },800);
 }
 
-function buildGA4Charts() {
-  destroyChart('ga4Session');
-  destroyChart('deviceChart');
-  destroyChart('countryChart');
+function exportSitePDF(){exportPDF();}
 
-  const days = makeDays(28);
-  const ctx1 = document.getElementById('ga4SessionChart').getContext('2d');
-  charts.ga4Session = new Chart(ctx1, {
-    type: 'line',
-    data: {
-      labels: days,
-      datasets: [
-        { label: 'Sessions', data: randArr(28, 2000, 5000), borderColor: '#f4952a', backgroundColor: 'rgba(244,149,42,0.08)', fill: true, tension: 0.4, pointRadius: 1, borderWidth: 2 },
-        { label: 'Users', data: randArr(28, 1500, 3800), borderColor: '#b8965a', fill: false, tension: 0.4, pointRadius: 1, borderWidth: 1.5, borderDash: [4,3] }
-      ]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 7, font: { size: 10 } }, grid: { display: false } }, y: { ticks: { font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } } } }
-  });
+function downloadPresAsPDF(){
+  const d=presData||{name:'All Websites',domain:'All Sites',impressions:2400000,sessions:172000,forms:3694,calls:684,ctr:'4.1',position:'14.3'};
+  showToast('Building presentation PDF…','loading');
+  setTimeout(()=>{
+    try{
+      const {jsPDF}=window.jspdf;
+      const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
 
-  const ctx2 = document.getElementById('deviceChart').getContext('2d');
-  charts.deviceChart = new Chart(ctx2, {
-    type: 'doughnut',
-    data: {
-      labels: ['Mobile', 'Desktop', 'Tablet'],
-      datasets: [{ data: [58, 35, 7], backgroundColor: ['#4f8ef7','#b8965a','#34d399'], borderWidth: 0, hoverOffset: 4 }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: false } } }
-  });
+      slides.forEach((s,idx)=>{
+        if(idx>0)doc.addPage();
+        // Dark slide
+        doc.setFillColor(10,11,14);doc.rect(0,0,297,210,'F');
+        doc.setFillColor(17,19,24);doc.rect(0,0,297,40,'F');
 
-  const ctx3 = document.getElementById('countryChart').getContext('2d');
-  charts.countryChart = new Chart(ctx3, {
-    type: 'bar',
-    data: {
-      labels: ['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany'],
-      datasets: [{ label: 'Sessions', data: [38400, 19200, 11800, 8400, 5100], backgroundColor: '#4f8ef7', borderRadius: 4 }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 10 } } }, y: { grid: { display: false }, ticks: { font: { size: 11 } } } } }
-  });
+        // Slide number
+        doc.setTextColor(92,100,120);doc.setFontSize(8);
+        doc.text(`${idx+1} / ${slides.length}`,278,10);
+
+        // Title
+        doc.setTextColor(255,255,255);doc.setFontSize(22);doc.setFont('helvetica','bold');
+        doc.text(s.title,14,26);
+        doc.setTextColor(92,100,120);doc.setFontSize(9);doc.setFont('helvetica','normal');
+        doc.text(d.domain,14,35);
+
+        if(s.type==='cover'){
+          doc.setTextColor(108,143,255);doc.setFontSize(10);
+          doc.text('NEXUS Analytics Platform',148,90,{align:'center'});
+          doc.setTextColor(255,255,255);doc.setFontSize(28);doc.setFont('helvetica','bold');
+          doc.text(s.title,148,110,{align:'center'});
+          doc.setTextColor(92,100,120);doc.setFontSize(11);doc.setFont('helvetica','normal');
+          doc.text(d.domain,148,122,{align:'center'});
+        } else {
+          const metrics=[
+            {label:'Impressions',value:fmtNum(d.impressions)},
+            {label:'Sessions',value:fmtNum(d.sessions)},
+            {label:'CTR',value:d.ctr+'%'},
+            {label:'Position',value:String(d.position)},
+            {label:'Forms',value:fmtNum(d.forms)},
+            {label:'Calls',value:String(d.calls)},
+          ];
+          const colors=[[108,143,255],[232,184,109],[62,207,142],[45,212,191],[167,139,250],[251,146,60]];
+          metrics.forEach((m,mi)=>{
+            const x=14+(mi%3)*93;const y=mi<3?50:110;
+            doc.setFillColor(24,27,34);doc.roundedRect(x,y,88,44,2,2,'F');
+            doc.setFillColor(...colors[mi]);doc.rect(x,y,88,2,'F');
+            doc.setTextColor(92,100,120);doc.setFontSize(7);doc.setFont('helvetica','bold');
+            doc.text(m.label.toUpperCase(),x+6,y+14);
+            doc.setTextColor(...colors[mi]);doc.setFontSize(22);doc.setFont('helvetica','bold');
+            doc.text(m.value,x+6,y+34);
+          });
+        }
+        // Footer
+        doc.setFillColor(17,19,24);doc.rect(0,200,297,10,'F');
+        doc.setTextColor(92,100,120);doc.setFontSize(7);
+        doc.text('NEXUS Analytics Platform · Confidential',14,207);
+      });
+
+      doc.save(`nexus-presentation-${Date.now()}.pdf`);
+      showToast('✓ Presentation PDF downloaded','success');
+    }catch(e){showToast('PDF failed','error');}
+  },600);
 }
 
-function buildGHLCharts() {
-  destroyChart('ghlCall');
-  destroyChart('callOutcome');
-
-  const days = makeDays(14);
-  const ctx1 = document.getElementById('ghlCallChart').getContext('2d');
-  charts.ghlCall = new Chart(ctx1, {
-    type: 'bar',
-    data: {
-      labels: days,
-      datasets: [
-        { label: 'Answered', data: randArr(14, 12, 32), backgroundColor: '#34d399', borderRadius: 3, stack: 'calls' },
-        { label: 'Missed', data: randArr(14, 4, 12), backgroundColor: '#e56b6b', borderRadius: 3, stack: 'calls' }
-      ]
-    },
-    options: { responsive: true, maintainAspectRatio: false, stacked: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 7, font: { size: 10 } }, grid: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 10 } } } } }
-  });
-
-  const ctx2 = document.getElementById('callOutcomeChart').getContext('2d');
-  charts.callOutcome = new Chart(ctx2, {
-    type: 'doughnut',
-    data: {
-      labels: ['Booked', 'Qualified', 'Info Only', 'No Answer'],
-      datasets: [{ data: [18, 28, 32, 22], backgroundColor: ['#34d399','#4f8ef7','#b8965a','#e56b6b'], borderWidth: 0, hoverOffset: 4 }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: false } } }
-  });
-}
-
-function buildWPCharts() {
-  destroyChart('formsBar');
-  destroyChart('formsTrend');
-  destroyChart('formsSite');
-
-  const ctx1 = document.getElementById('formsBarChart').getContext('2d');
-  charts.formsBar = new Chart(ctx1, {
-    type: 'bar',
-    data: {
-      labels: ['Contact Form — techflow', 'Booking Form — greenleaf', 'Lead Gen — techflow', 'Membership — urbanfit', 'Consultation — brightlegal', 'Newsletter — techflow'],
-      datasets: [{ label: 'Submissions', data: [487, 341, 215, 198, 148, 112], backgroundColor: ['#8b6fd4','#34d399','#8b6fd4','#b8965a','#4f8ef7','#8b6fd4'], borderRadius: 4 }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 10 } } }, y: { grid: { display: false }, ticks: { font: { size: 11 } } } } }
-  });
-
-  const days = makeDays(28);
-  const ctx2 = document.getElementById('formsTrendChart').getContext('2d');
-  charts.formsTrend = new Chart(ctx2, {
-    type: 'line',
-    data: {
-      labels: days,
-      datasets: [{ label: 'Submissions', data: randArr(28, 30, 120), borderColor: '#8b6fd4', backgroundColor: 'rgba(139,111,212,0.08)', fill: true, tension: 0.4, pointRadius: 1, borderWidth: 2 }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 7, font: { size: 10 } }, grid: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 10 } } } } }
-  });
-
-  const ctx3 = document.getElementById('formsSiteChart').getContext('2d');
-  charts.formsSite = new Chart(ctx3, {
-    type: 'doughnut',
-    data: {
-      labels: ['techflow', 'greenleaf', 'urbanfit', 'brightlegal'],
-      datasets: [{ data: [38, 29, 19, 14], backgroundColor: ['#8b6fd4','#34d399','#b8965a','#4f8ef7'], borderWidth: 0, hoverOffset: 4 }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: false } } }
-  });
-}
-
-// ── Modals ─────────────────────────────────────────────────────
-function openAddSite() {
-  document.getElementById('addSiteModal').classList.add('open');
-}
-
-function openConnectModal(name) {
-  document.getElementById('connectModalTitle').textContent = `Connect ${name}`;
-  document.getElementById('connectModal').classList.add('open');
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
-
-function addSite() {
-  const name = document.getElementById('newSiteName').value.trim();
-  const domain = document.getElementById('newSiteDomain').value.trim();
-  if (!domain) { alert('Please enter a domain.'); return; }
-
-  const select = document.getElementById('siteSelect');
-  const key = domain.replace(/[^a-z0-9]/gi, '').toLowerCase();
-  const opt = document.createElement('option');
-  opt.value = key;
-  opt.textContent = domain;
-  select.appendChild(opt);
-  select.value = key;
-
-  siteCount++;
-  document.getElementById('site-count-badge').textContent = siteCount;
-
-  siteData[key] = { impressions:'—', sessions:'—', forms:'—', calls:'—', ctr:'—', position:'—' };
-
-  closeModal('addSiteModal');
-  onSiteChange();
-
-  // Show toast
-  showToast('✓ Website added — connect your platforms to start seeing data.');
-}
-
-function showToast(msg, duration = 3000) {
-  const t = document.getElementById('pdfToast');
-  const m = document.getElementById('pdfToastMsg');
-  m.textContent = msg;
-  t.querySelector('.pdf-spinner').style.display = msg.includes('Generating') ? 'block' : 'none';
+// ═══════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  const spin=document.getElementById('toastSpin');
+  document.getElementById('toastMsg').textContent=msg;
+  spin.style.display=type==='loading'?'block':'none';
+  t.style.borderColor=type==='error'?'var(--red)':type==='loading'?'var(--border2)':'var(--green)';
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), duration);
+  if(type!=='loading')setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// ── PDF Export ─────────────────────────────────────────────────
-function exportPDF() {
-  const site = document.getElementById('siteSelect').value;
-  const siteName = document.getElementById('siteSelect').options[document.getElementById('siteSelect').selectedIndex].text;
-  const dateRange = document.getElementById('dateRange').options[document.getElementById('dateRange').selectedIndex].text;
-
-  const t = document.getElementById('pdfToast');
-  document.getElementById('pdfToastMsg').textContent = `Generating PDF — ${siteName}…`;
-  t.querySelector('.pdf-spinner').style.display = 'block';
-  t.classList.add('show');
-
-  setTimeout(() => {
-    t.classList.remove('show');
-    setTimeout(() => {
-      // Generate simple print view
-      const printWin = window.open('', '_blank');
-      const data = siteData[site] || siteData.all;
-      printWin.document.write(`<!DOCTYPE html>
-<html>
-<head>
-<title>SiteIQ Report — ${siteName}</title>
-<style>
-  body { font-family: Georgia, serif; margin: 40px; color: #1a1a1a; }
-  h1 { font-size: 28px; font-weight: 400; margin-bottom: 4px; }
-  .sub { color: #666; font-size: 13px; margin-bottom: 32px; }
-  .gold { color: #b8965a; }
-  .metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 32px; }
-  .m { border: 1px solid #e5e5e5; border-radius: 8px; padding: 16px 18px; }
-  .m-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 6px; }
-  .m-val { font-size: 26px; font-weight: 400; }
-  h2 { font-size: 16px; font-weight: 500; margin: 24px 0 12px; border-bottom: 1px solid #e5e5e5; padding-bottom: 8px; }
-  table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th { text-align: left; padding: 8px 12px; background: #f8f7f4; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: #888; }
-  td { padding: 9px 12px; border-bottom: 1px solid #f0eeea; }
-  .footer { margin-top: 40px; font-size: 11px; color: #aaa; text-align: center; border-top: 1px solid #eee; padding-top: 16px; }
-</style>
-</head>
-<body>
-<h1>SiteIQ <span class="gold">Report</span></h1>
-<div class="sub">${siteName} &nbsp;·&nbsp; ${dateRange} &nbsp;·&nbsp; Generated ${new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })}</div>
-
-<h2>Summary Metrics</h2>
-<div class="metrics">
-  <div class="m"><div class="m-label">Total Impressions</div><div class="m-val">${data.impressions}</div></div>
-  <div class="m"><div class="m-label">Organic Sessions</div><div class="m-val">${data.sessions}</div></div>
-  <div class="m"><div class="m-label">Form Submissions</div><div class="m-val">${data.forms}</div></div>
-  <div class="m"><div class="m-label">Voice AI Calls</div><div class="m-val">${data.calls}</div></div>
-  <div class="m"><div class="m-label">Avg. CTR</div><div class="m-val">${data.ctr}</div></div>
-  <div class="m"><div class="m-label">Avg. Position</div><div class="m-val">${data.position}</div></div>
-</div>
-
-<h2>Platform Coverage</h2>
-<table>
-  <thead><tr><th>Platform</th><th>Status</th><th>Last Sync</th><th>Properties</th></tr></thead>
-  <tbody>
-    <tr><td>Google Search Console</td><td>✓ Connected</td><td>2 hours ago</td><td>4</td></tr>
-    <tr><td>Google Analytics 4</td><td>✓ Connected</td><td>1 hour ago</td><td>4</td></tr>
-    <tr><td>GHL Voice AI</td><td>✓ Connected</td><td>30 min ago</td><td>1 API</td></tr>
-    <tr><td>WordPress Gravity Forms</td><td>✓ Connected</td><td>45 min ago</td><td>12 forms</td></tr>
-  </tbody>
-</table>
-
-<h2>Top Search Queries</h2>
-<table>
-  <thead><tr><th>Query</th><th>Clicks</th><th>Impressions</th><th>CTR</th><th>Position</th></tr></thead>
-  <tbody>
-    <tr><td>digital marketing agency</td><td>1,240</td><td>18,200</td><td>6.8%</td><td>3.1</td></tr>
-    <tr><td>seo services near me</td><td>980</td><td>14,100</td><td>6.9%</td><td>4.7</td></tr>
-    <tr><td>physiotherapy clinic</td><td>760</td><td>11,800</td><td>3.8%</td><td>8.2</td></tr>
-    <tr><td>personal trainer membership</td><td>540</td><td>9,400</td><td>2.9%</td><td>12.4</td></tr>
-  </tbody>
-</table>
-
-<div class="footer">Confidential — SiteIQ Dashboard &nbsp;·&nbsp; siteiq.app &nbsp;·&nbsp; Report generated automatically</div>
-</body>
-</html>`);
-      printWin.document.close();
-      printWin.focus();
-      setTimeout(() => printWin.print(), 500);
-    }, 300);
-  }, 2200);
+function refreshAll(){
+  if(activePage==='dashboard')buildDashboard();
 }
 
-// ── Sidebar mobile ─────────────────────────────────────────────
-function toggleSidebar() {
+function onTopbarSearch(q){
+  if(activePage==='sites'){
+    document.getElementById('siteFilter').value=q;
+    filterSites();
+  } else if(q.trim()){
+    showPage('sites');
+    setTimeout(()=>{document.getElementById('siteFilter').value=q;filterSites();},50);
+  }
+}
+
+function toggleSidebar(){
   document.getElementById('sidebar').classList.toggle('open');
   document.getElementById('sidebarOverlay').classList.toggle('open');
 }
-
-function closeSidebar() {
+function closeSidebar(){
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('open');
 }
 
-// Close modals on overlay click
-document.querySelectorAll('.modal-overlay').forEach(o => {
-  o.addEventListener('click', function(e) {
-    if (e.target === this) this.classList.remove('open');
-  });
+// Close overlays on background click
+document.querySelectorAll('.overlay').forEach(o=>{
+  o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
 });
 
-// ── Init ───────────────────────────────────────────────────────
-window.addEventListener('load', () => {
-  buildCharts();
+// Keyboard nav for presentation
+document.addEventListener('keydown',e=>{
+  if(activePage==='presentation'){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')nextSlide();
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')prevSlide();
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded',()=>{
+  loadSites();
+  updateSiteDropdowns();
+  buildDashboard();
+  // Pre-render sites list so it's ready immediately
+  filteredSites=[...sites].sort((a,b)=>a.name.localeCompare(b.name));
 });
 </script>
 </body>
